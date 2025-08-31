@@ -36,6 +36,7 @@ export default function Home() {
                 </SidebarMenu>
                 </SidebarGroup>
               </SidebarContent>
+              <SignedIn>
               <SidebarFooter>
                 <SidebarMenu>
                   <SidebarMenuItem>
@@ -43,6 +44,7 @@ export default function Home() {
                   </SidebarMenuItem>
                 </SidebarMenu>
               </SidebarFooter>
+              </SignedIn>
 
             </Sidebar>
             <main className="flex-1 ">
