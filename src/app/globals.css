@@ -1,6 +1,20 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Local Noize font (placed in public/Fonts/Noize.ttf) */
+@font-face {
+  font-family: 'Noize';
+  src: url('/Fonts/Noize.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Utility class to apply the Noize font */
+.noize {
+  font-family: 'Noize', var(--font-montserrat), Arial, Helvetica, sans-serif;
+}
+
 @custom-variant dark {
   @media (prefers-color-scheme: dark) {
     & {

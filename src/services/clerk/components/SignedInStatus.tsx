@@ -8,7 +8,7 @@ type Props = {
 const SignedInStatus = ({children}: Props) => {
   return (
     <Suspense>
-        <SignedIn>
+        <SignedIn >
             {children}  
         </SignedIn>
     </Suspense> 

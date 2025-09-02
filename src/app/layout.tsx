@@ -9,6 +9,7 @@ const montserrat = Montserrat({
   display: "swap",
 });
 
+
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
   subsets: ["latin"],
@@ -16,8 +17,11 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Lami Inc.",
+  title: "Dune Inc.",
   description: "Your Way To Your Dream Job or Dream Team",
+  icons: {
+    icon: "/favicons/favicon.ico",
+  },
 };
 
 export default function RootLayout({
