@@ -47,12 +47,22 @@ const JobListingForm = ({jobListing}: {jobListing?: Pick<typeof JobListingTable.
          const res = await action(data);
          if (res?.error) {
            toast.error(res.message);
-         } else {
+         } else if (res) {
+           // This shouldn't happen if redirect works, but just in case
            toast.success(jobListing ? "Job listing updated successfully!" : "Job listing created successfully!");
          }
+         // If no res is returned, it means redirect was called successfully
        } catch (error) {
-         // This catches redirect calls and other server action responses
-         console.log('Action completed, likely redirecting...');
+         // Check if this is a Next.js redirect error (which is expected)
+         if (error && typeof error === 'object' && 'digest' in error && 
+             (error as any).digest?.includes('NEXT_REDIRECT')) {
+           // This is a redirect, which is expected - don't show error
+           return;
+         }
+         
+         // Only show error toast for actual errors
+         console.error('Unexpected error:', error);
+         toast.error('An unexpected error occurred');
        }
     }
 

@@ -1,14 +1,19 @@
 import { db } from '@/app/drizzle/db'
-import { JobListingTable } from '@/app/drizzle/schema'
+import { JobListingStatus, JobListingTable } from '@/app/drizzle/schema'
+import AyncIf from '@/components/AyncIf'
 import { MarkdownPartial } from '@/components/markdown/MarkdownPartial'
 import { MarkdownRenderer } from '@/components/markdown/MarkdownRenderer'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { JobListingBadges } from '@/features/jobListings/components/JobListingBadges'
 import { formatJoblistingStatus } from '@/features/jobListings/lib/formatters'
+import { hasReachedMaxFeaturedJobListings } from '@/features/jobListings/util/planFeaturesHelper'
+import { getNextJobListingStatus } from '@/features/jobListings/util/utils'
 import { getCurrentOrganization } from '@/services/clerk/lib/getCurrentAuth'
+import { hasOrgUserPermission } from '@/services/clerk/lib/orgUserPermissions'
+import { hasPlanFeature } from '@/services/clerk/lib/planFeatures'
 import { and, eq } from 'drizzle-orm'
-import { EditIcon } from 'lucide-react'
+import { EditIcon, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import React, { Suspense } from 'react'
 type Props ={
@@ -49,9 +54,12 @@ async function SuspendedPage({params}: Props) {
 
 
           <div className='flex items-center gap-2 empty:-mt-4 space-grotesk'>
-            <Button asChild variant='outline'>
-              <Link href={`/employer/job-listings/${jobListing.id}/edit`}><EditIcon className='size-4' /> Edit</Link>
-            </Button>
+            <AyncIf condition={() => hasOrgUserPermission("job_listings:update")} loadingFallback={<Loader2 className='size-4 animate-spin' />} otherwise={null}>
+              <Button asChild variant='outline'>
+                <Link href={`/employer/job-listings/${jobListing.id}/edit`}><EditIcon className='size-4' /> Edit</Link>
+              </Button>
+            </AyncIf>
+            {statusUpdateButton({status:jobListing.status})}
           </div>
 
 
@@ -73,4 +81,25 @@ async function getJobListing(jobListingId: string, orgId: string) {
   return await db.query.JobListingTable.findFirst({
     where: and(eq(JobListingTable.id, jobListingId), eq(JobListingTable.organizationId, orgId))
   })
+}
+
+function statusUpdateButton({status}:{status:JobListingStatus}){
+  const button =     <Button  variant='secondary'> Toggle </Button>
+  return (
+
+    <AyncIf condition={() => hasOrgUserPermission("job_listings:change_status")} loadingFallback={<Loader2 className='size-4 animate-spin' />} otherwise={null}>
+      {getNextJobListingStatus(status) === "published" ? (
+
+
+        <AyncIf condition={async () =>{
+          const isMaxed =  await hasReachedMaxFeaturedJobListings()
+          return !isMaxed
+        }} loadingFallback={<Loader2 className='size-4 animate-spin' />} otherwise={null}>
+        {button}   
+      </AyncIf>
+      ) : (
+        button
+      )}
+    </AyncIf>
+  )
 }
