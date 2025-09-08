@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Montserrat, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import "@mdxeditor/editor/style.css";
 import ClerkProvider from "@/services/clerk/components/clerkProvider";
+import { Toaster } from "@/components/ui/sonner";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -37,6 +39,7 @@ export default function RootLayout({
           className={`${montserrat.variable} ${spaceGrotesk.variable} antialiased dark`}
           >
           {children}
+          <Toaster />
         </body>
       </html>
       </ClerkProvider>

@@ -7,13 +7,20 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
 export default async function AppSideBar({content, footerButton, children}: {content: ReactNode, footerButton: ReactNode, children: ReactNode}    ) {
-  const { userId } = await auth()
-  if (userId) {
-    const user = await currentUser()
-    const onboarded = Boolean((user?.unsafeMetadata as any)?.onboarded)
-    if (!onboarded) {
-      redirect("/onboarding")
+  try {
+    const { userId } = await auth()
+    if (userId) {
+      const user = await currentUser()
+      if (user) {
+        const onboarded = Boolean((user?.unsafeMetadata as any)?.onboarded)
+        if (!onboarded) {
+          redirect("/onboarding")
+        }
+      }
     }
+  } catch (error) {
+    console.error('Error in AppSideBar auth check:', error)
+    // Continue rendering even if auth check fails
   }
   return (
     <>

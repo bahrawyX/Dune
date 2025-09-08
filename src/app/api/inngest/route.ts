@@ -1,5 +1,5 @@
 import { inngest } from "@/services/inngest/client"
-  import { clerkCreateUser, clerkUpdateUser, clerkDeleteUser, onClerk } from "@/services/inngest/functions/clerk"
+  import { clerkCreateUser, clerkUpdateUser, clerkDeleteUser, clerkCreateOrganization, clerkUpdateOrganization, clerkDeleteOrganization } from "@/services/inngest/functions/clerk"
 import { serve } from "inngest/next"
 
 
@@ -9,5 +9,8 @@ export const { GET, POST, PUT } = serve({
     clerkCreateUser,
     clerkUpdateUser,
     clerkDeleteUser,
+    clerkCreateOrganization,
+    clerkUpdateOrganization,
+    clerkDeleteOrganization,
   ],
 })   

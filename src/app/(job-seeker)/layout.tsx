@@ -1,12 +1,13 @@
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import Link from "next/link";
-import { LogInIcon } from "lucide-react";
+import { Brain, BrainCircuit, BrainCircuitIcon, ClipboardList, ClipboardPen, LayoutDashboard, LogInIcon } from "lucide-react";
 import { ReactNode, Suspense } from "react";
 import SignedOutStatus from "@/services/clerk/components/SignedOutStatus";
 import SidebarUserButton from "@/features/users/components/SidebarUserButton";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import AppSideBar from "@/components/sidebar/AppSideBar";
+import SidebarNavMenuGroup from "@/components/sidebar/SidebarNavMenuGroup";
 
 export default async function JobSeekerLayout({children}: {children: ReactNode}) {
   const { userId } = await auth()
@@ -20,24 +21,16 @@ export default async function JobSeekerLayout({children}: {children: ReactNode})
   return (
     <>
       <AppSideBar
-       content={
-
-        <SidebarGroup>
-            <SidebarMenu>
-                <Suspense>
-                    <SignedOutStatus>
-                        <SidebarMenuItem>
-                                <SidebarMenuButton asChild className="cursor-pointer">
-                                <Link href="/sign-in">
-                                    <LogInIcon className="w-4 h-4" />
-                                    Sign In
-                                </Link>
-                            </SidebarMenuButton>
-                    </SidebarMenuItem>      
-                    </SignedOutStatus>
-                </Suspense>
-            </SidebarMenu>
-        </SidebarGroup>
+        content={
+          <SidebarNavMenuGroup 
+            items={[
+              {href: "/", icon: <ClipboardPen className="w-4 h-4" />, label: "Job Board"},
+              {href: "/ai-search", icon: <Brain className="w-4 h-4" />, label: "AI Search"},
+              {href: "/employer", icon: <LayoutDashboard className="w-4 h-4" />, label: "Employer Portal" , authStatus:"signed-in"} ,
+              {href: "/sign-in", icon: <LogInIcon className="w-4 h-4" />, label: "Sign In" , authStatus:"signed-out"}
+            ]}
+            className="mt-auto "
+          />
     } 
       footerButton={<SidebarUserButton />}  >
             {children}
