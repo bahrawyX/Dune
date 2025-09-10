@@ -8,6 +8,16 @@ type PlanFeature =
   | "1_featured_job_listing"
 
 export async function hasPlanFeature(feature: PlanFeature) {
-  const { has } = await auth()
-  return has({ feature })
+  try {
+    const { has } = await auth()
+    
+    if (!has) {
+      return false
+    }
+    
+    return has({ feature })
+  } catch (error) {
+    console.error('Error checking plan feature:', error)
+    return false
+  }
 }

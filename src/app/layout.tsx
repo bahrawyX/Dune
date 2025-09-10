@@ -32,16 +32,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider> 
-      <html lang="en">
-
-        <body
-          className={`${montserrat.variable} ${spaceGrotesk.variable} antialiased dark`}
-          >
+    <html lang="en">
+      <body
+        className={`${montserrat.variable} ${spaceGrotesk.variable} antialiased dark`}
+      >
+        <ClerkProvider>
           {children}
           <Toaster />
-        </body>
-      </html>
-      </ClerkProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }

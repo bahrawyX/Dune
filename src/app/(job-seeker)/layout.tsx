@@ -1,6 +1,5 @@
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import Link from "next/link";
-import { Brain, BrainCircuit, BrainCircuitIcon, ClipboardList, ClipboardPen, LayoutDashboard, LogInIcon } from "lucide-react";
+
+import { Brain, ClipboardPen, LayoutDashboard, LogInIcon } from "lucide-react";
 import { ReactNode, Suspense } from "react";
 import SignedOutStatus from "@/services/clerk/components/SignedOutStatus";
 import SidebarUserButton from "@/features/users/components/SidebarUserButton";
@@ -9,7 +8,7 @@ import { redirect } from "next/navigation";
 import AppSideBar from "@/components/sidebar/AppSideBar";
 import SidebarNavMenuGroup from "@/components/sidebar/SidebarNavMenuGroup";
 
-export default async function JobSeekerLayout({children}: {children: ReactNode}) {
+export default async function JobSeekerLayout({children ,sidebar}: {children: ReactNode, sidebar: ReactNode}) {
   const { userId } = await auth()
   if (userId) {
     const user = await currentUser()
@@ -22,6 +21,8 @@ export default async function JobSeekerLayout({children}: {children: ReactNode})
     <>
       <AppSideBar
         content={
+          <>
+          {sidebar}
           <SidebarNavMenuGroup 
             items={[
               {href: "/", icon: <ClipboardPen className="w-4 h-4" />, label: "Job Board"},
@@ -30,7 +31,8 @@ export default async function JobSeekerLayout({children}: {children: ReactNode})
               {href: "/sign-in", icon: <LogInIcon className="w-4 h-4" />, label: "Sign In" , authStatus:"signed-out"}
             ]}
             className="mt-auto "
-          />
+            />
+            </>
     } 
       footerButton={<SidebarUserButton />}  >
             {children}

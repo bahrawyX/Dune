@@ -19,4 +19,12 @@ export async function updateJobListing(id: string, jobListing: Partial<typeof Jo
   
    return updatedListing;
   }
+
+  export async function deleteJobListing(id: string) {
+   const [deleteListing] = await db.delete(JobListingTable).where(eq(JobListingTable.id, id)).returning({
+      id:JobListingTable.id,
+      organizationId : JobListingTable.organizationId
+   })
   
+   return deleteListing;
+  }
