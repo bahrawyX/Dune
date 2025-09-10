@@ -1,4 +1,3 @@
-import { auth, currentUser } from '@clerk/nextjs/server'
 import React, { Suspense } from 'react'
 import { SidebarUserButtonClient } from './_SidebarUserButtonClient'
 import { getCurrentUser } from '@/services/clerk/lib/getCurrentAuth'
@@ -6,9 +5,7 @@ import SignedOutStatus from '@/services/clerk/components/SignedOutStatus'
 import { SidebarMenuButton } from '@/components/ui/sidebar'
 import { LogOutIcon } from 'lucide-react'
 
-type Props = {}
-
-const SidebarUserButton = (props: Props) => {
+const SidebarUserButton = () => {
   return (
     <Suspense><SidebarUserSuspense /></Suspense>
   )

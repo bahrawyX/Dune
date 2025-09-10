@@ -1,6 +1,5 @@
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";     
 import { ReactNode } from "react";
-import SidebarUserButton from "@/features/users/components/SidebarUserButton";
 import { AppSidebarClient } from "./_AppSidebarClient";
 import SignedInStatus from "@/services/clerk/components/SignedInStatus";
 import { auth, currentUser } from "@clerk/nextjs/server";
@@ -12,7 +11,7 @@ export default async function AppSideBar({content, footerButton, children}: {con
     if (userId) {
       const user = await currentUser()
       if (user) {
-        const onboarded = Boolean((user?.unsafeMetadata as any)?.onboarded)
+        const onboarded = Boolean((user?.unsafeMetadata as Record<string, unknown>)?.onboarded)
         if (!onboarded) {
           redirect("/onboarding")
         }

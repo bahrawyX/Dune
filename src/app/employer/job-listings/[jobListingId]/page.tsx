@@ -32,7 +32,7 @@ export default function JobListingPage (props:Props) {
 
 async function SuspendedPage({params}: Props) {
   let orgId: string | null = null;
-  let jobListing: any = null;
+  let jobListing: typeof JobListingTable.$inferSelect | null | undefined = null;
   
   try {
     const orgResult = await getCurrentOrganization();
@@ -42,7 +42,7 @@ async function SuspendedPage({params}: Props) {
     const {jobListingId}= await params
     jobListing = await getJobListing(jobListingId, orgId)
 
-    if(jobListing == null) return <div>Job Listing not found</div>;
+    if(jobListing == null || jobListing == undefined) return <div>Job Listing not found</div>;
   } catch (error) {
     console.error('Error loading job listing page:', error);
     return <div>Error loading job listing. Please refresh the page.</div>;

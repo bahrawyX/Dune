@@ -1,12 +1,6 @@
 import React from 'react'
 
-const JobListingPage = ({
-    params,
-    searchParams,
-}:{
-    params:Promise<{jobListingId:string}>
-    searchParams:Promise<Record<string,string | string[]>>
-}) => {
+const JobListingPage = () => {
   return (
     <div>JobListingPage</div>
   )

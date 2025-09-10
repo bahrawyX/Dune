@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { JobListingSchema } from '../action/schema';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import z from 'zod';
 import {
     Select,
@@ -14,7 +13,7 @@ import {
     SelectValue,
   } from "@/components/ui/select"
 import { useForm } from 'react-hook-form';
-import { experienceLevels, jobListingTypes, JobListingTable, LocationRequirement, locationRequirements, wageIntervals } from '@/app/drizzle/schema';
+import { experienceLevels, jobListingTypes, JobListingTable, locationRequirements, wageIntervals } from '@/app/drizzle/schema';
 import { formatExperienceLevel, formatJobType, formatLocationRequirement, formatWageInterval } from '../lib/formatters';
 import { StateSelectItems } from './StateSelectItems';
 import { MarkdownEditor } from '@/components/markdown/MarkdownEditor';
@@ -54,8 +53,9 @@ const JobListingForm = ({jobListing}: {jobListing?: Pick<typeof JobListingTable.
          // If no res is returned, it means redirect was called successfully
        } catch (error) {
          // Check if this is a Next.js redirect error (which is expected)
-         if (error && typeof error === 'object' && 'digest' in error && 
-             (error as any).digest?.includes('NEXT_REDIRECT')) {
+        if (error && typeof error === 'object' && 'digest' in error && 
+            (error as Record<string, unknown>).digest && 
+            String((error as Record<string, unknown>).digest).includes('NEXT_REDIRECT')) {
            // This is a redirect, which is expected - don't show error
            return;
          }

@@ -1,5 +1,4 @@
 import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import JobListingForm from '@/features/jobListings/components/JobListingForm'
 import React from 'react'
 

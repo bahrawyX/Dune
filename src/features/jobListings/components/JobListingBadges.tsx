@@ -9,7 +9,6 @@ import {
   formatJobListingLocation,
 } from "../lib/formatters"
 import {
-    Banknote,
   BanknoteIcon,
   BuildingIcon,
   GraduationCapIcon,

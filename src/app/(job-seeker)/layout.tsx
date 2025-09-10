@@ -1,7 +1,6 @@
 
 import { Brain, ClipboardPen, LayoutDashboard, LogInIcon } from "lucide-react";
-import { ReactNode, Suspense } from "react";
-import SignedOutStatus from "@/services/clerk/components/SignedOutStatus";
+import { ReactNode } from "react";
 import SidebarUserButton from "@/features/users/components/SidebarUserButton";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
@@ -12,7 +11,7 @@ export default async function JobSeekerLayout({children ,sidebar}: {children: Re
   const { userId } = await auth()
   if (userId) {
     const user = await currentUser()
-    const onboarded = Boolean((user?.unsafeMetadata as any)?.onboarded)
+    const onboarded = Boolean((user?.unsafeMetadata as Record<string, unknown>)?.onboarded)
     if (!onboarded) {
       redirect("/onboarding")
     }

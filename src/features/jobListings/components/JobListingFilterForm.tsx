@@ -38,7 +38,7 @@ import { Button } from "@/components/ui/button"
 import { LoadingSwap } from "@/components/LoadingSwap"
 import { useSidebar } from "@/components/ui/sidebar"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Suspense, useState, useEffect } from "react"
+import { useState, useEffect } from "react"
 
 const ANY_VALUE = "any"
 

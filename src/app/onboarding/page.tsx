@@ -29,7 +29,7 @@ export default function OnboardingPage() {
     // setUsername(initial.username)
   }, [initial.firstName, initial.lastName])
 
-  const onboarded = Boolean((user?.unsafeMetadata as any)?.onboarded)
+  const onboarded = Boolean((user?.unsafeMetadata as Record<string, unknown>)?.onboarded)
 
   useEffect(() => {
     if (!isLoaded) return
@@ -47,12 +47,12 @@ export default function OnboardingPage() {
 
   function extractError(err: unknown): string {
     try {
-      const anyErr = err as any
+      const anyErr = err as Record<string, unknown>
       if (anyErr?.errors && Array.isArray(anyErr.errors) && anyErr.errors.length) {
-        const first = anyErr.errors[0]
-        return first?.longMessage || first?.message || JSON.stringify(first)
+        const first = anyErr.errors[0] as Record<string, unknown>
+        return (first?.longMessage as string) || (first?.message as string) || JSON.stringify(first)
       }
-      return anyErr?.message || JSON.stringify(anyErr)
+      return (anyErr?.message as string) || JSON.stringify(anyErr)
     } catch {
       return "Failed to save (unknown error)"
     }
@@ -89,11 +89,11 @@ export default function OnboardingPage() {
       // 3) Only mark onboarded if username update succeeded
       // if (usernameUpdated) {
       await user.update({
-        unsafeMetadata: { ...(user?.unsafeMetadata as any), onboarded: true } as any,
+        unsafeMetadata: { ...(user?.unsafeMetadata as Record<string, unknown>), onboarded: true },
       })
       router.replace("/")
       // }
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("Onboarding update failed:", e)
       setError(extractError(e))
     } finally {

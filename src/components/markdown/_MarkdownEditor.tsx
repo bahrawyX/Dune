@@ -21,10 +21,10 @@ import {
 } from "@mdxeditor/editor"
 import { forwardRef } from "react"
 
-const InternalMarkdownEditor = forwardRef<MDXEditorMethods, MDXEditorProps & { className?: string }>((
+const InternalMarkdownEditor = forwardRef<MDXEditorMethods, MDXEditorProps & { className?: string }>(function InternalMarkdownEditor(
   { className, ...props },
   ref
-) => {
+) {
   const isDarkMode = useIsDarkMode()
 
   return (

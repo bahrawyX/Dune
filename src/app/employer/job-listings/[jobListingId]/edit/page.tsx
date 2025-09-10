@@ -1,7 +1,6 @@
 import { db } from '@/app/drizzle/db'
 import { JobListingTable } from '@/app/drizzle/schema'
 import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import JobListingForm from '@/features/jobListings/components/JobListingForm'
 import { getCurrentOrganization } from '@/services/clerk/lib/getCurrentAuth'
 import { and, eq } from 'drizzle-orm'

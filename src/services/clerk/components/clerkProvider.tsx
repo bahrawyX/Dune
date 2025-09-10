@@ -7,7 +7,7 @@ type Props = {
     children: React.ReactNode
 }
 
-const clerkProvider = ({ children }: Props) => {
+const ClerkProvider = ({ children }: Props) => {
     const isDarkMode = useIsDarkMode()
   return (
     <Suspense>
@@ -18,4 +18,4 @@ const clerkProvider = ({ children }: Props) => {
   )
 }
 
-export default clerkProvider
+export default ClerkProvider

@@ -75,6 +75,9 @@ export function formatWage(wage: number, wageInterval: WageInterval) {
       case "hourly": {
         return `${wageFormatter.format(wage)} / hr`
       }
+      case "monthly": {
+        return `${wageFormatter.format(wage)} / month`
+      }
       case "yearly": {
         return wageFormatter.format(wage)
       }
