@@ -1,7 +1,7 @@
 "use server"
 import z from "zod";
-import { JobListingSchema } from "./schema";
-import { getCurrentOrganization } from "@/services/clerk/lib/getCurrentAuth";
+import { JobListingSchema, newjobListingApplicationSchema } from "./schema";
+import { getCurrentOrganization, getCurrentUser } from "@/services/clerk/lib/getCurrentAuth";
 import { redirect } from "next/navigation";
 import { insertJobListing, updateJobListing as updateJobListingDB, deleteJobListing as deleteJobListingDB } from "../db/jobListings";
 import { JobListingTable } from "@/app/drizzle/schema";
@@ -11,14 +11,41 @@ import { hasOrgUserPermission } from "@/services/clerk/lib/orgUserPermissions";
 import { getNextJobListingStatus } from "../util/utils";
 import { hasReachedMaxFeaturedJobListings, hasReachedMaxPublishedJobListings } from "../util/planFeaturesHelper";
 import { revalidatePath } from "next/cache";
-
+import { inngest } from "@/services/inngest/client";
+import { getUserResume } from "@/app/(job-seeker)/job-listings/[jobListingId]/page";
 export async function createJobListing(unSafeData:z.infer<typeof JobListingSchema>){
-    const {orgId} = await getCurrentOrganization();
+    const {orgId, organization} = await getCurrentOrganization({allData: true});
 
     if(orgId==null){
         return {
             error:true,
             message: "You need to be a member of an organization to create a job listing"
+        }
+    }
+
+    if (organization == null) {
+        try {
+            const { clerkClient } = await import('@clerk/nextjs/server');
+            const client = await clerkClient();
+            const clerkOrg = await client.organizations.getOrganization({ organizationId: orgId });
+            
+            // Insert the organization into our database
+            const { insertOrganization } = await import('@/features/organizations/db/organizations');
+            await insertOrganization({
+                id: clerkOrg.id,
+                name: clerkOrg.name,
+                imageUrl: clerkOrg.imageUrl,
+                createdAt: new Date(clerkOrg.createdAt),
+                updatedAt: new Date(clerkOrg.updatedAt),
+            });
+            
+            console.log('Organization created in database:', clerkOrg.id);
+        } catch (orgError) {
+            console.error('Error ensuring organization exists:', orgError);
+            return {
+                error: true,
+                message: "Failed to create organization in database. Please try again."
+            };
         }
     }
 
@@ -42,18 +69,41 @@ export async function createJobListing(unSafeData:z.infer<typeof JobListingSchem
 
     let jobListing;
     try {
-        jobListing = await insertJobListing({
+        // Ensure all required fields have values and clean description
+        const insertData = {
             ...data,
-            organizationId:orgId,
-            status:"draft" as const,
+            organizationId: orgId,
+            status: "draft" as const,
             experienceLevel: data.experienceLevel ?? "junior",
             locationRequirement: data.locationRequirement ?? "on-site", 
             type: data.type ?? "full-time",
             wageInterval: data.wageInterval ?? "yearly",
-            isFeatured: data.isFeatured ?? false
-        })
+            isFeatured: data.isFeatured ?? false,
+            // Ensure city and stateAbbreviation are properly handled
+            city: data.city || null,
+            stateAbbreviation: data.stateAbbreviation || null,
+            wage: data.wage || null,
+            // Clean description from HTML entities
+            description: data.description.replace(/&#x20;/g, ' ').replace(/&nbsp;/g, ' ')
+        };
+
+        console.log('Inserting job listing with data:', insertData);
+        console.log('Data types:', {
+            wageInterval: typeof insertData.wageInterval,
+            experienceLevel: typeof insertData.experienceLevel,
+            locationRequirement: typeof insertData.locationRequirement,
+            type: typeof insertData.type,
+            status: typeof insertData.status
+        });
+        jobListing = await insertJobListing(insertData)
     } catch (error) {
-        console.error('Error creating job listing:', error)
+        console.error('Detailed error creating job listing:');
+        console.error('Error object:', error);
+        console.error('Error message:', error instanceof Error ? error.message : 'Unknown error');
+        console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+        if (error && typeof error === 'object' && 'code' in error) {
+            console.error('Error code:', error.code);
+        }
         return {
             error: true,
             message: `Failed to create job listing: ${error instanceof Error ? error.message : 'Unknown error'}`
@@ -259,3 +309,4 @@ export async function deleteJobListing(id: string)  {
   redirect('/employer')
 
 }
+

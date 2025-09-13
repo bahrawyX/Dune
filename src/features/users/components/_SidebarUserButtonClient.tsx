@@ -21,7 +21,7 @@ import {
 import Link from "next/link"
 
 type User = {
-  name: string
+  name: string | null
   imageUrl: string
   email: string
 }
@@ -76,7 +76,8 @@ export function SidebarUserButtonClient({ user }: { user: User }) {
 }
 
 function UserInfo({ imageUrl, email, name }: User) {
-  const nameInitials = name
+  const safeName = (name && name.trim().length > 0) ? name : email
+  const nameInitials = safeName
     .split(" ")
     .slice(0, 2)
     .map(str => str[0])
@@ -85,13 +86,13 @@ function UserInfo({ imageUrl, email, name }: User) {
   return (
     <div className="flex items-center gap-2 overflow-hidden">
       <Avatar className="rounded-lg size-8">
-        <AvatarImage src={imageUrl} alt={name} />
+  <AvatarImage src={imageUrl} alt={safeName} />
         <AvatarFallback className="uppercase bg-primary text-primary-foreground">
           {nameInitials}
         </AvatarFallback>
       </Avatar>
       <div className="flex flex-col flex-1 min-w-0 leading-tight group-data-[state=collapsed]:hidden">
-        <span className="truncate text-sm font-semibold">{name}</span>
+  <span className="truncate text-sm font-semibold">{safeName}</span>
         <span className="truncate text-xs">{email}</span>
       </div>
     </div>

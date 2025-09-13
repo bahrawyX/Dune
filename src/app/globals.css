@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "uploadthing/tw/v4";
 @plugin "@tailwindcss/typography";
+@source "../../node_modules/@uploadthing/react/dist"; 
 /* Local Noize font (placed in public/Fonts/Noize.ttf) */
 @font-face {
   font-family: 'Noize';
@@ -89,8 +91,8 @@ body {
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --featured: oklch(0.550 0.081 116.74);
-  --featured-foreground: oklch(0.985 0 0); /* white */
+  --featured: #889258; /* Olive green color */
+  --color-889258: #889258; /* Olive green color */
   
   
   --accent: oklch(0.97 0 0);
@@ -131,7 +133,7 @@ body {
   --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
-  --featured: oklch(0.66 0.10 210);
+  --featured: #889258; /* Olive green color */
   --featured-foreground: oklch(0.98 0 0); /* white */
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
@@ -189,4 +191,39 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
+}
+
+button , Button {
+  cursor: pointer !important;
+ }
+
+/* Custom Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--muted);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-889258);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6d7444; /* Darker shade of #889258 */
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--muted);
+}
+
+/* Firefox scrollbar styling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-889258) var(--muted);
 }

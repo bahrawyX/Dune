@@ -1,26 +1,10 @@
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";     
 import { ReactNode } from "react";
 import { AppSidebarClient } from "./_AppSidebarClient";
-import SignedInStatus from "@/services/clerk/components/SignedInStatus";
-import { auth, currentUser } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
+// Removed auth imports - no longer checking for onboarding
 
 export default async function AppSideBar({content, footerButton, children}: {content: ReactNode, footerButton: ReactNode, children: ReactNode}    ) {
-  try {
-    const { userId } = await auth()
-    if (userId) {
-      const user = await currentUser()
-      if (user) {
-        const onboarded = Boolean((user?.unsafeMetadata as Record<string, unknown>)?.onboarded)
-        if (!onboarded) {
-          redirect("/onboarding")
-        }
-      }
-    }
-  } catch (error) {
-    console.error('Error in AppSideBar auth check:', error)
-    // Continue rendering even if auth check fails
-  }
+  // Removed onboarding check - users go directly to main app after sign-in
   return (
     <>
       <SidebarProvider className="overflow-y-hidden">
@@ -35,7 +19,6 @@ export default async function AppSideBar({content, footerButton, children}: {con
                         content
                     }
               </SidebarContent>
-              <SignedInStatus>
               <SidebarFooter>
                 <SidebarMenu>
                   <SidebarMenuItem>
@@ -43,7 +26,6 @@ export default async function AppSideBar({content, footerButton, children}: {con
                   </SidebarMenuItem>
                 </SidebarMenu>
               </SidebarFooter>
-              </SignedInStatus>
 
             </Sidebar>
             <main className="flex-1 ">

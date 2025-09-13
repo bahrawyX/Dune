@@ -44,9 +44,13 @@ function verifyWebhook({
         throw new NonRetriableError("No primary email address found")
       }
 
+      const fullName = [userData.first_name, userData.last_name]
+        .filter(part => typeof part === 'string' && part.trim().length > 0)
+        .join(' ')
+        .trim()
       await insertUser({
         id: userData.id,
-        name: `${userData.first_name} ${userData.last_name}`,
+        name: fullName.length ? fullName : null,
         imageUrl: userData.image_url,
         email: email.email_address,
         createdAt: new Date(userData.created_at),
@@ -84,8 +88,12 @@ function verifyWebhook({
         throw new NonRetriableError("No primary email address found")
       }
 
+      const fullName = [userData.first_name, userData.last_name]
+        .filter(part => typeof part === 'string' && part.trim().length > 0)
+        .join(' ')
+        .trim()
       await updateUser(userData.id, {
-        name: `${userData.first_name} ${userData.last_name}`,
+        name: fullName.length ? fullName : null,
         imageUrl: userData.image_url,
         email: email.email_address,
         updatedAt: new Date(userData.updated_at),

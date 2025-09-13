@@ -1,10 +1,15 @@
-import JobBoardSideBar from '@/app/(job-seeker)/_shared/JobBoardSideBar'
 import React from 'react'
 
-const SidebarPage = () => {
+const JobListingPage = ({
+    params,
+    searchParams,
+}:{
+    params:Promise<{jobListingId:string}>
+    searchParams:Promise<Record<string,string | string[]>>
+}) => {
   return (
-    <JobBoardSideBar />
+    <div>JobListingPage</div>
   )
 }
 
-export default SidebarPage
+export default JobListingPage

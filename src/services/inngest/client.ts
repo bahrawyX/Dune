@@ -15,6 +15,9 @@ type Events = {
         "clerk/organization.updated" : ClerkWebHookData<OrganizationJSON>
         "clerk/organization.deleted" : ClerkWebHookData<DeletedObjectJSON>  
         "clerk/webhook_recieved " : { data: { raw: string, headers: Record<string, string> } }
+        "app/jobListingApplication.created" : { data: { jobListingId: string, userId: string } }
+        "app/resume.uploaded" : { user: { id: string }, data: { userId: string } }
+        
 }
 
 export const inngest = new Inngest({
