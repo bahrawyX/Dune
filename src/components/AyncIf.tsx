@@ -5,7 +5,7 @@ type Props ={
     loadingFallback : React.ReactNode;
     otherwise : React.ReactNode;
 }
-const AyncIf = async ({condition, children, loadingFallback, otherwise}: Props) => {
+const AsyncIf = async ({condition, children, loadingFallback, otherwise}: Props) => {
 
   return (
     <Suspense fallback={loadingFallback}>
@@ -16,7 +16,7 @@ const AyncIf = async ({condition, children, loadingFallback, otherwise}: Props) 
   )
 }
 
-export default AyncIf
+export default AsyncIf
 
 const SuspendedComponent = async ({condition, children, otherwise}: {condition: () => Promise<boolean>, children: React.ReactNode, otherwise: React.ReactNode}) => {
     const isConditionMet = await condition();

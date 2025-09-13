@@ -19,7 +19,6 @@ async function SidebarUserSuspense() {
   console.log('SidebarUserSuspense - userId:', userId, 'user:', user?.name);
   
   if (user == null) {
-    // Fallback: fetch directly from Clerk if DB user not yet created (e.g., webhook delay)
     if (userId) {
       const clerkUser = await currentUser()
       if (clerkUser) {

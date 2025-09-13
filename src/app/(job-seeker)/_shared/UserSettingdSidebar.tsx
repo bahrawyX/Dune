@@ -5,8 +5,8 @@ import React from 'react'
 const UserSettingdSidebar = () => {
   return (
     <SidebarNavMenuGroup items={[
-        {href:"/user-settings/notifications", icon: <BellRingIcon />, label: "Notifications"},
-        {href:"/user-settings/resume", icon: <FileUserIcon />, label: "Resume"}
+        {href:"/user-settings/notifications", icon: <BellRingIcon className="w-4 h-4" />, label: "Notifications"},
+        {href:"/user-settings/resume", icon: <FileUserIcon className="w-4 h-4" />, label: "Resume"}
     ]}
     />
   )

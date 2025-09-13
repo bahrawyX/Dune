@@ -32,3 +32,6 @@ export const JobListingSchema = z.object({
 export const newjobListingApplicationSchema=z.object({
     coverLetter: z.string().transform(val => (val.trim() === "" ? null : val)).nullable(),
 })
+export const jobListingAiSearchSchema = z.object({
+    query: z.string().min(1, "Query Is Required"),
+})

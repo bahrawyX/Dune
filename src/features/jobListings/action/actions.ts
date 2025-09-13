@@ -1,6 +1,6 @@
 "use server"
 import z from "zod";
-import { JobListingSchema, newjobListingApplicationSchema } from "./schema";
+import { jobListingAiSearchSchema, JobListingSchema, newjobListingApplicationSchema } from "./schema";
 import { getCurrentOrganization, getCurrentUser } from "@/services/clerk/lib/getCurrentAuth";
 import { redirect } from "next/navigation";
 import { insertJobListing, updateJobListing as updateJobListingDB, deleteJobListing as deleteJobListingDB } from "../db/jobListings";
@@ -13,6 +13,7 @@ import { hasReachedMaxFeaturedJobListings, hasReachedMaxPublishedJobListings } f
 import { revalidatePath } from "next/cache";
 import { inngest } from "@/services/inngest/client";
 import { getUserResume } from "@/app/(job-seeker)/job-listings/[jobListingId]/page";
+import { getMatchingJobListings } from "@/services/inngest/ai/getMatchingListings";
 export async function createJobListing(unSafeData:z.infer<typeof JobListingSchema>){
     const {orgId, organization} = await getCurrentOrganization({allData: true});
 
@@ -310,3 +311,38 @@ export async function deleteJobListing(id: string)  {
 
 }
 
+export async function getAiJobListingSearchResults(unsafe: z.infer<typeof jobListingAiSearchSchema>):Promise<{error:true, message:string} | { error: false; jobIds: string[]}> {
+  const {success, data} = jobListingAiSearchSchema.safeParse(unsafe);
+  if(!success){
+    return {
+      error: true,
+      message: "Error Processing Your Query Contact Support If The Problem Persists"
+    }
+  }
+  const {userId} = await getCurrentUser();
+  if(userId == null){
+    return {
+      error: true,
+      message: "You Need To Be Logged In To Use This Feature"
+    }
+  }
+  const allListings = await getPublicJobListings();
+  const MatchingListings = await getMatchingJobListings(data.query, allListings,{
+    maxNumberOfJobs: 10
+  });
+  if(MatchingListings.length === 0){
+    return {
+      error: true,
+      message: "No Jobs Matched Your Criteria"
+    }
+  }
+  return {
+    error: false,
+    jobIds: MatchingListings
+  }
+}
+function getPublicJobListings(){
+  return db.query.JobListingTable.findMany({
+    where: eq(JobListingTable.status, "published")
+  })
+}

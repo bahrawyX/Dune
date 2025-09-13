@@ -25,7 +25,7 @@ const SidebarNavMenuGroup = ({items, className} : {
             <SidebarMenuItem key={item.href}>
               <SidebarMenuButton isActive={pathname === item.href} asChild className="cursor-pointer">
               <Link href={item.href} className='w-full flex items-center '>
-                  {item.icon}
+                  <span className='mr-2 text-featured' >{item.icon}</span>
                   <span className="mt-[1px]">{item.label}</span>
               </Link>
                 </SidebarMenuButton>
