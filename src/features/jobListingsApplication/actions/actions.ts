@@ -1,14 +1,15 @@
 "use server"
 
 import { db } from "@/app/drizzle/db"
-import { JobListingTable, UserResumeTable, UserTable } from "@/app/drizzle/schema"
 import { newjobListingApplicationSchema } from "@/features/jobListings/action/schema"
-import { getCurrentUser } from "@/services/clerk/lib/getCurrentAuth"
+import { getCurrentOrganization, getCurrentUser } from "@/services/clerk/lib/getCurrentAuth"
 import { and, eq } from "drizzle-orm"
-import z from "zod"
-import { insertJobListingApplication } from "../db/jobListingApplication"
+import z, { success } from "zod"
+import { ApplicationStage, applicationStages, JobListingApplicationTable, JobListingTable, UserResumeTable, UserTable } from '@/app/drizzle/schema'
+import { insertJobListingApplication, updateJobListingApplication } from "../db/jobListingApplication"
 import { inngest } from "@/services/inngest/client"
 import { revalidatePath } from "next/cache"
+import { hasOrgUserPermission } from "@/services/clerk/lib/orgUserPermissions"
 
 export async function createJobListingApplication(
   jobListingId: string,
@@ -142,4 +143,134 @@ async function getUserResume(id: string) {
     columns: { userId: true}
   })
 
+}
+
+export async function updateJobListingApplicationStage(
+  {
+    jobListingId,
+    userId,
+  }: {
+    jobListingId: string
+    userId: string
+  },
+  unsafeStage: ApplicationStage
+) {
+  const { success, data: stage } = z
+    .enum(applicationStages)
+    .safeParse(unsafeStage)
+
+  if (!success) {
+    return {
+      error: true,
+      message: "Invalid stage",
+    }
+  }
+
+  if (
+    !(await hasOrgUserPermission("job_listing_applications:change_stage"))
+  ) {
+    return {
+      error: true,
+      message: "You don't have permission to update the stage",
+    }
+  }
+
+  const { orgId } = await getCurrentOrganization()
+  const jobListing = await getJobListing(jobListingId)
+  if (
+    orgId == null ||
+    jobListing == null ||
+    orgId !== jobListing.organizationId
+  ) {
+    return {
+      error: true,
+      message: "You don't have permission to update the stage",
+    }
+  }
+
+  await updateJobListingApplication(
+    {
+      jobListingId,
+      userId,
+    },
+    { stage }
+  )
+
+  // Revalidate the job listing page to refresh the applications table
+  revalidatePath(`/employer/job-listings/${jobListingId}`)
+  
+  return {
+    error: false,
+    message: "Application stage updated successfully"
+  }
+}
+async function getJobListing(jobListingId: string) {
+  return await db.query.JobListingTable.findFirst({
+    where: eq(JobListingTable.id, jobListingId),
+    columns: {
+      organizationId: true
+    }
+  })
+}
+export async function updateJobListingApplicationRating(
+  {
+    jobListingId,
+    userId,
+  }: {
+    jobListingId: string
+    userId: string
+  },
+  unsafeRating: number | null
+) {
+  const { success, data: rating } = z
+    .number()
+    .min(1)
+    .max(5)
+    .nullish()
+    .safeParse(unsafeRating)
+
+  if (!success) {
+    return {
+      error: true,
+      message: "Invalid rating",
+    }
+  }
+
+  if (
+    !(await hasOrgUserPermission("job_listing_applications:change_rating"))
+  ) {
+    return {
+      error: true,
+      message: "You don't have permission to update the rating",
+    }
+  }
+
+  const { orgId } = await getCurrentOrganization()
+  const jobListing = await getJobListing(jobListingId)
+  if (
+    orgId == null ||
+    jobListing == null ||
+    orgId !== jobListing.organizationId
+  ) {
+    return {
+      error: true,
+      message: "You don't have permission to update the rating",
+    }
+  }
+
+  await updateJobListingApplication(
+    {
+      jobListingId,
+      userId,
+    },
+    { rating }
+  )
+
+  // Revalidate the job listing page to refresh the applications table
+  revalidatePath(`/employer/job-listings/${jobListingId}`)
+  
+  return {
+    error: false,
+    message: "Application rating updated successfully"
+  }
 }

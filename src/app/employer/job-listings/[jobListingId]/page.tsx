@@ -67,7 +67,7 @@ async function SuspendedPage({params}: Props) {
   }
 
   return (
-      <div className='space-y-6 max-w-6xl max-auto p-4 @container'>
+      <div className='space-y-6 max-w-6xl mx-auto p-4 @container'>
         <div className='flex justify-between items-start gap-4 @max-4xl:flex-col @max-4xl:gap-2 @max-4xl:items-start'>
 
 
@@ -277,7 +277,22 @@ function FeaturedToggleButtonText(isFeatured: boolean) {
 
 async function Applications({jobListingId}: {jobListingId: string}) {
   const applications = await getJobListingApplications(jobListingId)
-  return <ApplicationsTable applications={applications} 
+
+
+  return <ApplicationsTable applications={
+    
+    applications.map(app =>({
+      ...app,
+      user:{
+        ...app.user,
+        resume : app.user.resume? {
+          ...app.user.resume,
+          markdownSummary: app.user.resume.aiSummary ? (<MarkdownRenderer source={app.user.resume.aiSummary} />) : null
+         }:  null
+      },
+      coverLetterMarkdown: app.coverLetter ? (<MarkdownRenderer source={app.coverLetter} />) : null
+    }))
+    }
   canUpdateStage={await hasOrgUserPermission("job_listing_applications:change_stage")}
   canUpdateRating={await hasOrgUserPermission("job_listing_applications:change_rating")}/>
 
