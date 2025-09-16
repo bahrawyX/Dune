@@ -1,8 +1,8 @@
 "use server"
 import { getCurrentUser } from "@/services/clerk/lib/getCurrentAuth";
-import { notificationSettingsSchema } from "./schemas";
 import z from "zod";
 import { updateUserNotificationSettingsDB } from "../db/userNotificationSettings";
+import { notificationSettingsSchema } from "./schema";
 
 export async function updateUserNotificationSettings(unsafe: z.infer<typeof notificationSettingsSchema>) {
     const {success, data} = notificationSettingsSchema.safeParse(unsafe);

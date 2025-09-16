@@ -2,7 +2,7 @@ import { db } from '@/app/drizzle/db';
 import { UserNotificationSettingsTable } from '@/app/drizzle/schema';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import NotificationForm from '@/features/users/components/NotificationForm';
+import { NotificationsForm } from '@/features/users/components/NotificationForm';
 import { getCurrentUser } from '@/services/clerk/lib/getCurrentAuth';
 import { eq } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
@@ -48,7 +48,7 @@ async function SuspendedForm({userId}:{userId:string}) {
     aiPrompt: null
   };
 
-  return <NotificationForm notificationSettings={settings} />
+  return <NotificationsForm notificationSettings={settings} />
 }
 
 async function getUserNotificationSettings(userId: string) {

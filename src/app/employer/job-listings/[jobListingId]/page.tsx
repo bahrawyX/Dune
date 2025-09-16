@@ -1,20 +1,23 @@
 import { db } from '@/app/drizzle/db'
-import { JobListingStatus, JobListingTable } from '@/app/drizzle/schema'
+import { JobListingApplicationTable, JobListingStatus, JobListingTable } from '@/app/drizzle/schema'
 import { ActionButton } from '@/components/ActionButton'
 import { MarkdownPartial } from '@/components/markdown/MarkdownPartial'
 import { MarkdownRenderer } from '@/components/markdown/MarkdownRenderer'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Separator } from '@/components/ui/separator'
 import { deleteJobListing, toggleJobListingFeatured, toggleJobListingStatus } from '@/features/jobListings/action/actions'
 import { JobListingBadges } from '@/features/jobListings/components/JobListingBadges'
 import { formatJoblistingStatus } from '@/features/jobListings/lib/formatters'
 import { hasReachedMaxFeaturedJobListings } from '@/features/jobListings/util/planFeaturesHelper'
 import { getNextJobListingStatus } from '@/features/jobListings/util/utils'
+import ApplicationsTable, { SkeletonApplicationsLoader } from '@/features/jobListingsApplication/components/ApplicationsTable'
 import { getCurrentOrganization } from '@/services/clerk/lib/getCurrentAuth'
 import { hasOrgUserPermission } from '@/services/clerk/lib/orgUserPermissions'
 import { and, eq } from 'drizzle-orm'
 import { EditIcon, EyeIcon, EyeOffIcon, StarIcon, StarOffIcon, Trash2 } from 'lucide-react'
+import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
 import Link from 'next/link'
 import React, { ReactNode, Suspense } from 'react'
 type Props ={
@@ -112,7 +115,13 @@ async function SuspendedPage({params}: Props) {
         mainMarkdown ={<MarkdownRenderer className="prose-sm" source={jobListing.description}/>}
         dialogTitle="Job Listing Description"
         />
-
+        <Separator />
+        <div className="space-y-6">
+            <h2 className='text-lg font-semibold'>Applicants</h2>
+            <Suspense fallback={<SkeletonApplicationsLoader />}>
+              <Applications jobListingId={jobListing.id} />
+            </Suspense>
+        </div>
       
       </div>
   )
@@ -265,3 +274,45 @@ function FeaturedToggleButtonText(isFeatured: boolean) {
     )
   }
 }
+
+async function Applications({jobListingId}: {jobListingId: string}) {
+  const applications = await getJobListingApplications(jobListingId)
+  return <ApplicationsTable applications={applications} 
+  canUpdateStage={await hasOrgUserPermission("job_listing_applications:change_stage")}
+  canUpdateRating={await hasOrgUserPermission("job_listing_applications:change_rating")}/>
+
+}
+
+async function getJobListingApplications(jobListingId: string) {
+  const data = await db.query.JobListingApplicationTable.findMany({
+    where: eq(JobListingApplicationTable.jobListingId, jobListingId),
+    columns: {
+      coverLetter: true,
+      createdAt: true,
+      stage: true,
+      rating: true,
+      jobListingId: true,
+    },
+    with: {
+      user: {
+        columns: {
+          id: true,
+          name: true,
+          imageUrl: true,
+        },
+        with: {
+          resume: {
+            columns: {
+              resumeFileUrl: true,
+              aiSummary: true,
+            },
+          },
+        },
+      },
+    },
+  })
+
+
+  return data
+}
+

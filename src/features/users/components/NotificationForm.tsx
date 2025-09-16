@@ -19,8 +19,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { LoadingSwap } from "@/components/LoadingSwap"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { notificationSettingsSchema } from "../actions/schemas"
 import { updateUserNotificationSettings } from "../actions/updateUserNotificationSettings"
+import { notificationSettingsSchema } from "../actions/schema"
 
 export function NotificationsForm({
   notificationSettings,

@@ -1,10 +1,10 @@
 import UserSettingdSidebar from '@/app/(job-seeker)/_shared/UserSettingdSidebar'
 import React from 'react'
 
-const UserResumePage = () => {
+const UserNotificationPage = () => {
   return (
     <UserSettingdSidebar />
   )
 }
 
-export default UserResumePage
+export default UserNotificationPage

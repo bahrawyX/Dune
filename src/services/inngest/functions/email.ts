@@ -4,6 +4,7 @@ import { and, eq, gte } from "drizzle-orm"
 import {
   JobListingApplicationTable,
   JobListingTable,
+  OrganizationUserSettingsTable,
   UserNotificationSettingsTable,
 } from "@/app/drizzle/schema"
 import { subDays } from "date-fns"
@@ -12,6 +13,7 @@ import { getMatchingJobListings } from "@/services/inngest/ai/getMatchingListing
 import { resend } from "@/services/resend/client"
 import DailyJobListingEmail from "@/services/resend/components/DailyJobListing"
 import { env } from "@/app/data/env/server"
+import DailyApplicationEmail from "@/services/resend/components/DailyApplicationEmail"
 
 export const prepareDailyUserJobListingNotifications = inngest.createFunction(
   {
@@ -174,3 +176,187 @@ export const sendDailyUserJobListingEmail = inngest.createFunction(
   }
 )
 
+
+export const prepareDailyOrganizationUserApplicationNotifications =
+  inngest.createFunction(
+    {
+      id: "prepare-daily-organization-user-application-notifications",
+      name: "Prepare Daily Organization User Application Notifications",
+    },
+    { cron: "TZ=America/Chicago 0 7 * * *" },
+    async ({ step, event }) => {
+      const getUsers = step.run("get-user-settings", async () => {
+        return await db.query.OrganizationUserSettingsTable.findMany({
+          where: eq(
+            OrganizationUserSettingsTable.newApplicationEmailNotifications,
+            true
+          ),
+          columns: {
+            userId: true,
+            organizationId: true,
+            newApplicationEmailNotifications: true,
+            minimumRating: true,
+          },
+          with: {
+            user: {
+              columns: {
+                email: true,
+                name: true,
+              },
+            },
+          },
+        })
+      })
+
+      const getApplications = step.run("get-recent-applications", async () => {
+        return await db.query.JobListingApplicationTable.findMany({
+          where: and(
+            gte(
+              JobListingApplicationTable.createdAt,
+              subDays(new Date(event.ts ?? Date.now()), 1)
+            )
+          ),
+          columns: {
+            rating: true,
+          },
+          with: {
+            user: {
+              columns: {
+                name: true,
+              },
+            },
+            jobListing: {
+              columns: {
+                id: true,
+                title: true,
+              },
+              with: {
+                organization: {
+                  columns: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        })
+      })
+
+      const [userNotifications, applications] = await Promise.all([
+        getUsers,
+        getApplications,
+      ])
+
+      console.log(`Found ${userNotifications.length} users with application notifications enabled`)
+      console.log(`Found ${applications.length} recent applications`)
+
+      if (applications.length === 0) {
+        console.log("No applications found - exiting")
+        return { message: "No applications found" }
+      }
+      
+      if (userNotifications.length === 0) {
+        console.log("No users with application notifications enabled - exiting")
+        return { message: "No users with application notifications enabled" }
+      }
+
+      const groupedNotifications = Object.groupBy(
+        userNotifications,
+        n => n.userId
+      )
+
+      const events = Object.entries(groupedNotifications)
+        .map(([, settings]) => {
+          if (settings == null || settings.length === 0) return null
+          const userName = settings[0].user.name
+          const userEmail = settings[0].user.email
+
+          const filteredApplications = applications
+            .filter(a => {
+              return settings.find(
+                s =>
+                  s.organizationId === a.jobListing.organization.id &&
+                  (s.minimumRating == null ||
+                    (a.rating ?? 0) >= s.minimumRating)
+              )
+            })
+            .map(a => ({
+              organizationId: a.jobListing.organization.id,
+              organizationName: a.jobListing.organization.name,
+              jobListingId: a.jobListing.id,
+              jobListingTitle: a.jobListing.title,
+              userName: a.user.name,
+              rating: a.rating,
+            }))
+
+          console.log(`User ${userEmail} has ${filteredApplications.length} matching applications`)
+          if (filteredApplications.length === 0) return null
+
+          return {
+            name: "app/email.daily-organization-user-applications",
+            user: {
+              name: userName ?? "",
+              email: userEmail,
+            },
+            data: { applications: filteredApplications as any },
+          } as const satisfies GetEvents<
+            typeof inngest
+          >["app/email.daily-organization-user-applications"]
+        })
+        .filter(v => v != null)
+
+      console.log(`Sending ${events.length} application email events`)
+      if (events.length === 0) {
+        console.log("No events to send - exiting")
+        return { message: "No events to send" }
+      }
+      
+      await step.sendEvent("send-email", events)
+      return { message: `Sent ${events.length} application email events successfully` }
+    }
+  )
+
+
+export const sendDailyOrganizationUserApplicationEmail = inngest.createFunction(
+  {
+    id: "send-daily-organization-user-application-email",
+    name: "Send Daily Organization User Application Email",
+    throttle: {
+      limit: 1000,
+      period: "1m",
+    },
+  },
+  { event: "app/email.daily-organization-user-applications" },
+  async ({ event, step }) => {
+    const { applications } = event.data
+    const user = event.user
+    
+    console.log(`Processing application email for ${user.email}`)
+    console.log(`Applications count: ${applications.length}`)
+    
+    if (applications.length === 0) {
+      console.log("No applications - returning early")
+      return { message: "No applications to process" }
+    }
+
+    const emailResult = await step.run("send-email", async () => {
+      return await resend.emails.send({
+        from: "DUNE <onboarding@dune.dev>",
+        to: user.email,
+        subject: "Daily Job Listing Applications",
+        react: DailyApplicationEmail({
+          applications,
+          userName: user.name,
+        }),
+      })
+    })
+
+    console.log(`Application email sent successfully to ${user.email}`)
+    return { 
+      message: `Email sent to ${user.email}`, 
+      applicationCount: applications.length,
+      emailId: emailResult.data?.id 
+    }
+  }
+)
