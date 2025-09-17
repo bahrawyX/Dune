@@ -13,11 +13,11 @@ import { StepData } from "../OnboardingStepper"
 
 interface StepJobPreferencesProps {
   data: StepData
-  updateData: (stepKey: keyof StepData, data: any) => void
+  updateData: (stepKey: keyof StepData, data: Record<string, unknown>) => void
   onNext: () => void
   onPrevious: () => void
-  isFirst: boolean
-  isLast: boolean
+  isFirst?: boolean
+  isLast?: boolean
 }
 
 const popularFields = [
@@ -48,8 +48,8 @@ export function StepJobPreferences({
   updateData, 
   onNext, 
   onPrevious, 
-  isFirst, 
-  isLast 
+  // isFirst,
+  // isLast
 }: StepJobPreferencesProps) {
   const { toast } = useToast()
   const [formData, setFormData] = useState({

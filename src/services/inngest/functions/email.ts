@@ -286,7 +286,7 @@ export const prepareDailyOrganizationUserApplicationNotifications =
               organizationName: a.jobListing.organization.name,
               jobListingId: a.jobListing.id,
               jobListingTitle: a.jobListing.title,
-              userName: a.user.name,
+              userName: a.user.name ?? "Anonymous",
               rating: a.rating,
             }))
 
@@ -299,7 +299,7 @@ export const prepareDailyOrganizationUserApplicationNotifications =
               name: userName ?? "",
               email: userEmail,
             },
-            data: { applications: filteredApplications as any },
+            data: { applications: filteredApplications },
           } as const satisfies GetEvents<
             typeof inngest
           >["app/email.daily-organization-user-applications"]

@@ -1,6 +1,6 @@
 import React from 'react'
 import { SidebarGroup, SidebarGroupContent, SidebarGroupLabel } from '@/components/ui/sidebar'
-import { Bot, Lightbulb, Sparkles } from 'lucide-react'
+import { Bot, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 

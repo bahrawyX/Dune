@@ -132,7 +132,7 @@ export function OnboardingStepper() {
     }
   }
 
-  const updateStepData = (stepKey: keyof StepData, data: any) => {
+  const updateStepData = (stepKey: keyof StepData, data: Record<string, unknown>) => {
     setStepData(prev => ({
       ...prev,
       [stepKey]: { ...prev[stepKey], ...data }

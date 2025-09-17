@@ -1,8 +1,8 @@
 import React from 'react'
 
 const JobListingPage = ({
-    params,
-    searchParams,
+    params: _params,
+    searchParams: _searchParams,
 }:{
     params:Promise<{jobListingId:string}>
     searchParams:Promise<Record<string,string | string[]>>

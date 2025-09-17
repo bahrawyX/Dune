@@ -6,6 +6,7 @@ import {
     text,
     uuid,
     varchar,
+    index,
   } from "drizzle-orm/pg-core"
   import { JobListingTable } from "./jobListing"
   import { UserTable } from "./user"
@@ -40,7 +41,17 @@ import {
       createdAt,
       updatedAt,
     },
-    table => [primaryKey({ columns: [table.jobListingId, table.userId] })]
+    table => ({
+      primaryKey: primaryKey({ columns: [table.jobListingId, table.userId] }),
+      jobListingIdx: index("job_applications_job_listing_idx").on(table.jobListingId),
+      userIdx: index("job_applications_user_idx").on(table.userId),
+      stageIdx: index("job_applications_stage_idx").on(table.stage),
+      createdAtIdx: index("job_applications_created_at_idx").on(table.createdAt),
+      ratingIdx: index("job_applications_rating_idx").on(table.rating),
+      // Composite indexes for common queries
+      jobListingStageIdx: index("job_applications_job_listing_stage_idx").on(table.jobListingId, table.stage),
+      userStageIdx: index("job_applications_user_stage_idx").on(table.userId, table.stage),
+    })
   )
   
   export const jobListingApplicationRelations = relations(

@@ -7,10 +7,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { extractRouterConfig } from "uploadthing/server";
 import { customFileRouter } from "@/services/uploadthing/router";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
-import SiteFooter from "@/components/navigation/SiteFooter";
-import TopOvalNavbar from "@/components/navigation/TopOvalNavbar";
-import { Briefcase, Link } from "lucide-react";
-import { Button } from "@/components/ui/button";
+// Unused imports removed
 const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin"],

@@ -25,10 +25,10 @@ export default async function GettingReadyPage() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Let's Get You Ready! 🚀
+              Let&apos;s Get You Ready! 🚀
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              We'll help you set up your profile in just a few steps so you can start finding your dream job.
+              We&apos;ll help you set up your profile in just a few steps so you can start finding your dream job.
             </p>
           </div>
           

@@ -1,4 +1,4 @@
-import { pgTable, varchar, timestamp, uuid } from "drizzle-orm/pg-core"
+import { pgTable, varchar, uuid, index } from "drizzle-orm/pg-core"
 import { createdAt } from "../schemaHelpers"
 import { UserTable } from "./user"
 import { JobListingTable } from "./jobListing"
@@ -12,7 +12,13 @@ export const JobBookmarkTable = pgTable("job_bookmarks", {
     .references(() => JobListingTable.id, { onDelete: "cascade" })
     .notNull(),
   createdAt,
-})
+}, table => ({
+  userIdx: index("job_bookmarks_user_idx").on(table.userId),
+  jobListingIdx: index("job_bookmarks_job_listing_idx").on(table.jobListingId),
+  // Composite index for the most common query pattern
+  userJobIdx: index("job_bookmarks_user_job_idx").on(table.userId, table.jobListingId),
+  createdAtIdx: index("job_bookmarks_created_at_idx").on(table.createdAt),
+}))
 
 export const jobBookmarkRelations = relations(
   JobBookmarkTable,

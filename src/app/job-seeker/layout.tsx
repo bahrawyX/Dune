@@ -1,5 +1,5 @@
 
-import { Brain, ClipboardPen, LayoutDashboard, LogInIcon, Bookmark } from "lucide-react";
+import { Brain, ClipboardPen, LayoutDashboard, Bookmark, BarChart3 } from "lucide-react";
 import { ReactNode } from "react";
 import SidebarUserButton from "@/features/users/components/SidebarUserButton";
 // Removed auth imports - no longer checking for onboarding
@@ -19,6 +19,7 @@ export default async function JobSeekerLayout({children ,sidebar}: {children: Re
               {href: "/job-seeker", icon: <ClipboardPen className="w-4 h-4" />, label: "Job Board"},
               {href: "/job-seeker/ai-search", icon: <Brain className="w-4 h-4" />, label: "AI Search"},
               {href: "/job-seeker/bookmarks", icon: <Bookmark className="w-4 h-4" />, label: "Bookmarks", authStatus:"signed-in"},
+              {href: "/job-seeker/analytics", icon: <BarChart3 className="w-4 h-4" />, label: "Analytics", authStatus:"signed-in"},
               {href: "/employer", icon: <LayoutDashboard className="w-4 h-4" />, label: "Employer Portal" , authStatus:"signed-in"} ,
             ]}
             className="mt-auto "

@@ -4,8 +4,8 @@ import { db } from "@/app/drizzle/db"
 import { newjobListingApplicationSchema } from "@/features/jobListings/action/schema"
 import { getCurrentOrganization, getCurrentUser } from "@/services/clerk/lib/getCurrentAuth"
 import { and, eq } from "drizzle-orm"
-import z, { success } from "zod"
-import { ApplicationStage, applicationStages, JobListingApplicationTable, JobListingTable, UserResumeTable, UserTable } from '@/app/drizzle/schema'
+import z from "zod"
+import { ApplicationStage, applicationStages, JobListingTable, UserResumeTable, UserTable } from '@/app/drizzle/schema'
 import { insertJobListingApplication, updateJobListingApplication } from "../db/jobListingApplication"
 import { inngest } from "@/services/inngest/client"
 import { revalidatePath } from "next/cache"
@@ -19,15 +19,17 @@ export async function createJobListingApplication(
     error: true,
     message: "You don't have permission to submit an application",
   }
-  let { userId, user } = await getCurrentUser({ allData: true })
-  if (userId == null) return permissionError
+  const { userId: clerkUserId, user } = await getCurrentUser({ allData: true })
+  if (clerkUserId == null) return permissionError
+
+  let actualUserId: string;
 
   // Ensure user exists in our database before creating application
   if (user == null) {
     try {
       const { clerkClient } = await import('@clerk/nextjs/server');
       const client = await clerkClient();
-      const clerkUser = await client.users.getUser(userId);
+      const clerkUser = await client.users.getUser(clerkUserId);
       
       // Insert the user into our database
       const { insertUser } = await import('@/features/users/db/users');
@@ -49,8 +51,7 @@ export async function createJobListingApplication(
       // User should now exist (either created or was already there)
       console.log('User confirmed in database:', insertResult.user.id);
       
-      const actualUserId = insertResult.user.id;
-      userId = actualUserId;
+      actualUserId = insertResult.user.id;
       
     } catch (userError) {
       console.error('Error ensuring user exists:', userError);
@@ -60,11 +61,11 @@ export async function createJobListingApplication(
       };
     }
   } else {
-    userId = user.id;
+    actualUserId = user.id;
   }
 
   const [userResume, jobListing] = await Promise.all([
-    getUserResume(userId),
+    getUserResume(actualUserId),
     getPublicJobListing(jobListingId),
   ])
   if ( jobListing == null || userResume == null) return permissionError
@@ -81,7 +82,7 @@ export async function createJobListingApplication(
   try {
     await insertJobListingApplication({
       jobListingId,
-      userId,
+      userId: actualUserId,
       ...data,
     })
 
@@ -89,7 +90,7 @@ export async function createJobListingApplication(
 
     await inngest.send({
       name: "app/jobListingApplication.created",
-      data: { jobListingId, userId },
+      data: { jobListingId, userId: actualUserId },
     })
 
     return {
@@ -104,13 +105,13 @@ export async function createJobListingApplication(
       
       try {
         const userCheck = await db.query.UserTable.findFirst({
-          where: eq(UserTable.id, userId)
+          where: eq(UserTable.id, actualUserId)
         });
         
         if (!userCheck) {
-          console.error('User does not exist in database despite creation attempt:', userId);
+          console.error('User does not exist in database despite creation attempt:', actualUserId);
         } else {
-          console.error('User exists but foreign key constraint still failed:', userId, userCheck);
+          console.error('User exists but foreign key constraint still failed:', actualUserId, userCheck);
         }
       } catch (checkError) {
         console.error('Error checking user existence:', checkError);

@@ -1,4 +1,4 @@
-import { auth, User } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 type UserPermission =
   | "job_listings:create"
   | "job_listings:update"

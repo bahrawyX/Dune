@@ -13,11 +13,11 @@ import { StepData } from "../OnboardingStepper"
 
 interface StepAdditionalPreferencesProps {
   data: StepData
-  updateData: (stepKey: keyof StepData, data: any) => void
+  updateData: (stepKey: keyof StepData, data: Record<string, unknown>) => void
   onNext: () => void
   onPrevious: () => void
-  isFirst: boolean
-  isLast: boolean
+  isFirst?: boolean
+  isLast?: boolean
 }
 
 const popularLocations = [
@@ -40,8 +40,8 @@ export function StepAdditionalPreferences({
   updateData, 
   onNext, 
   onPrevious, 
-  isFirst, 
-  isLast 
+  // isFirst,
+  // isLast
 }: StepAdditionalPreferencesProps) {
   const { toast } = useToast()
   const [formData, setFormData] = useState({

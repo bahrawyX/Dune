@@ -59,7 +59,7 @@ export function MarkdownPartial({
       {isOverflowing && (
         <Dialog>
           <DialogTrigger asChild>
-            <Button variant="ghost" className="underline -ml-3">
+            <Button variant="secondary" className="  mt-2">
               Read More
             </Button>
           </DialogTrigger>

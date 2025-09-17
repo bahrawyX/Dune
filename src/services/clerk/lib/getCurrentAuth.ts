@@ -3,7 +3,7 @@ import { OrganizationTable, UserTable } from "@/app/drizzle/schema"
 import { auth } from "@clerk/nextjs/server"
 import { eq } from "drizzle-orm"
 
-type MaybePromise<T> = T | Promise<T>
+// type MaybePromise<T> = T | Promise<T>
 
 export async function getCurrentUser({ allData = false }: { allData?: boolean } = {}) {
     const { userId } = await auth()

@@ -13,10 +13,10 @@ import Link from 'next/link'
 import { connection } from 'next/server'
 import React, { Suspense } from 'react'
 import z from 'zod'
-import { normalizeToAnnualSalary } from '@/features/jobListings/lib/formatters'
+// import { normalizeToAnnualSalary } from '@/features/jobListings/lib/formatters'
 import { BookmarkButton } from '@/features/jobBookmarks/components/BookmarkButton'
 import { getCurrentUser } from '@/services/clerk/lib/getCurrentAuth'
-import { isJobBookmarked } from '@/features/jobBookmarks/actions/actions'
+import { isJobBookmarked, getBulkBookmarkStatus } from '@/features/jobBookmarks/actions/actions'
 const searchParamsSchema = z.object({
     title: z.string().optional().catch(undefined),
     city: z.string().optional().catch(undefined),
@@ -73,6 +73,15 @@ async function SuspendedComponent({searchParams , params}:Props){
     }
     
   const jobListings = await getJobListings(validatedSearchParams, jobListingId);
+  
+  // Batch fetch bookmark statuses to avoid N+1 queries
+  const { userId } = await getCurrentUser()
+  let bookmarkStatuses: Record<string, boolean> = {}
+  
+  if (userId && jobListings.length > 0) {
+    const jobIds = jobListings.map(job => job.id)
+    bookmarkStatuses = await getBulkBookmarkStatus(userId, jobIds)
+  }
     
     if(jobListings.length === 0) {
       return <div className='text-center text-2xl font-bold m-4 text-muted-foreground'>No job listings found</div>;
@@ -84,7 +93,11 @@ async function SuspendedComponent({searchParams , params}:Props){
         <ResultsHeader search={search} validated={validatedSearchParams} count={resultsCount} />
         {jobListings.map((jobListing) => (
           <Link className='block' href={`/job-seeker/job-listings/${jobListing.id}?${convertSearchparamToString(search)}`} key={jobListing.id}>
-            <JobListingListItem organization={jobListing.organization} jobListing={jobListing} />
+            <JobListingListItem 
+              organization={jobListing.organization} 
+              jobListing={jobListing}
+              initialBookmarked={bookmarkStatuses[jobListing.id]}
+            />
           </Link>
         ))}
       </div>
@@ -92,7 +105,7 @@ async function SuspendedComponent({searchParams , params}:Props){
 }
 
 function ResultsHeader({ search, validated, count }: { search: Record<string,string>, validated: z.infer<typeof searchParamsSchema>, count: number }){
-  const params = new URLSearchParams(search as any)
+  const params = new URLSearchParams(search as Record<string, string>)
   const makeHref = (next: URLSearchParams) => `/job-seeker?${next.toString()}`
   const removeKey = (key: string) => {
     const next = new URLSearchParams(params)
@@ -151,6 +164,7 @@ function ResultsHeader({ search, validated, count }: { search: Record<string,str
 function JobListingListItem({
     jobListing,
     organization,
+    initialBookmarked,
   }: {
     jobListing: Pick<
       typeof JobListingTable.$inferSelect,
@@ -168,6 +182,7 @@ function JobListingListItem({
       | "skills"
     >
     organization: Pick<typeof OrganizationTable.$inferSelect, "name" | "imageUrl">
+    initialBookmarked?: boolean
   }) {
     const nameInitials = organization?.name
       .split(" ")
@@ -223,7 +238,10 @@ function JobListingListItem({
               />
             </div>
             <Suspense fallback={<div className="w-20 h-8" />}>
-              <BookmarkButtonWrapper jobListingId={jobListing.id} />
+              <BookmarkButtonWrapper 
+                jobListingId={jobListing.id} 
+                initialBookmarked={initialBookmarked}
+              />
             </Suspense>
           </CardContent>
       </Card>
@@ -394,13 +412,20 @@ function JobListingListItem({
     return data
   }
 
-async function BookmarkButtonWrapper({ jobListingId }: { jobListingId: string }) {
+async function BookmarkButtonWrapper({ 
+  jobListingId, 
+  initialBookmarked 
+}: { 
+  jobListingId: string
+  initialBookmarked?: boolean 
+}) {
   const { userId } = await getCurrentUser()
   if (!userId) {
     return <BookmarkButton jobListingId={jobListingId} />
   }
   
-  const bookmarked = await isJobBookmarked(userId, jobListingId)
+  // Use the pre-fetched bookmark status if available, otherwise fallback to individual query
+  const bookmarked = initialBookmarked ?? await isJobBookmarked(userId, jobListingId)
   return <BookmarkButton jobListingId={jobListingId} initialBookmarked={bookmarked} />
 }
 

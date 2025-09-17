@@ -5,8 +5,9 @@ import { MarkdownPartial } from '@/components/markdown/MarkdownPartial'
 import { MarkdownRenderer } from '@/components/markdown/MarkdownRenderer'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Separator } from '@/components/ui/separator'
+// import { Separator } from '@/components/ui/separator'
 import { deleteJobListing, toggleJobListingFeatured, toggleJobListingStatus } from '@/features/jobListings/action/actions'
 import { JobListingBadges } from '@/features/jobListings/components/JobListingBadges'
 import { formatJoblistingStatus } from '@/features/jobListings/lib/formatters'
@@ -15,18 +16,29 @@ import { getNextJobListingStatus } from '@/features/jobListings/util/utils'
 import ApplicationsTable, { SkeletonApplicationsLoader } from '@/features/jobListingsApplication/components/ApplicationsTable'
 import { getCurrentOrganization } from '@/services/clerk/lib/getCurrentAuth'
 import { hasOrgUserPermission } from '@/services/clerk/lib/orgUserPermissions'
-import { and, eq } from 'drizzle-orm'
-import { EditIcon, EyeIcon, EyeOffIcon, StarIcon, StarOffIcon, Trash2 } from 'lucide-react'
-import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
+import { and, eq, count } from 'drizzle-orm'
+import { EditIcon, EyeIcon, EyeOffIcon, StarIcon, StarOffIcon, Trash2, FileText, Users, Calendar } from 'lucide-react'
+// import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
 import Link from 'next/link'
 import React, { ReactNode, Suspense } from 'react'
+import { JobListingDetailSkeleton, JobListingSidebarSkeleton } from '@/components/skeletons/JobListingDetailSkeleton'
+import { SidebarContent } from './_SidebarContent'
 type Props ={
   params:Promise<{jobListingId:string}>
 }
 
 export default function JobListingPage (props:Props) {
   return (
-      <Suspense>
+      <Suspense fallback={
+        <div className="flex gap-6">
+          <div className="flex-1">
+            <JobListingDetailSkeleton />
+          </div>
+          <div className="w-80 hidden xl:block">
+            <JobListingSidebarSkeleton />
+          </div>
+        </div>
+      }>
           <SuspendedPage {...props}/>
         </Suspense>
   )
@@ -67,62 +79,116 @@ async function SuspendedPage({params}: Props) {
   }
 
   return (
-      <div className='space-y-6 max-w-6xl mx-auto p-4 @container'>
-        <div className='flex justify-between items-start gap-4 @max-4xl:flex-col @max-4xl:gap-2 @max-4xl:items-start'>
+      <div className="flex gap-6 max-w-7xl mx-auto p-4">
+        {/* Main Content */}
+        <div className="flex-1 space-y-6">
+          {/* Header Section */}
+          <Card className="border-l-4 border-l-primary bg-gradient-to-r from-background to-muted/20">
+            <CardContent className="p-6">
+              <div className='flex justify-between items-start gap-4 @max-4xl:flex-col @max-4xl:gap-4 @max-4xl:items-start'>
+                <div className="flex-1">
+                  <div className="flex items-start gap-3 mb-2">
+                    <FileText className="h-6 w-6 text-primary mt-2 flex-shrink-0" />
+                    <h1 className='text-3xl font-bold tracking-tight leading-tight'>{jobListing.title}</h1>
+                  </div>
+                  <div className='flex flex-wrap gap-2 mt-3'>
+                    <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+                      {formatJoblistingStatus(jobListing.status)}
+                    </Badge>
+                    <JobListingBadges jobListing={jobListing} />
+                  </div>
+                  
+                  {/* Quick Info */}
+                  <div className="flex items-center gap-4 mt-4 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="h-4 w-4" />
+                      Posted {new Date(jobListing.postedAt || jobListing.createdAt).toLocaleDateString()}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Users className="h-4 w-4" />
+                      <Suspense fallback="...">
+                        <ApplicationCount jobListingId={jobListing.id} />
+                      </Suspense>
+                    </div>
+                  </div>
+                </div>
 
+                <div className='flex items-center gap-2 flex-wrap'>
+                  {canUpdate && (
+                    <Button asChild variant='outline' className="bg-background">
+                      <Link href={`/employer/job-listings/${jobListing.id}/edit`}>
+                        <EditIcon className='size-4 mr-2' /> 
+                        Edit
+                      </Link>
+                    </Button>
+                  )}
+                  <StatusUpdateButton 
+                    status={jobListing.status} 
+                    id={jobListing.id}
+                    canChangeStatus={canChangeStatus}
+                    hasReachedMax={hasReachedMax}
+                  />
+                  {jobListing.status === "published" && (
+                    <FeaturedToggleButton 
+                      isFeatured={jobListing.isFeatured} 
+                      id={jobListing.id}
+                      canChangeStatus={canChangeStatus}
+                      hasReachedMax={hasReachedMax}
+                    />
+                  )}
+                  {canDelete && (
+                    <ActionButton 
+                      className='cursor-pointer' 
+                      variant='destructive' 
+                      action={deleteJobListing.bind(null, jobListing.id)} 
+                      requireAreYouSure={true} 
+                      areYouSureDescription='You are about to delete the job listing'
+                    >
+                      <Trash2 className='size-4 mr-2' /> Delete
+                    </ActionButton>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-          <div>
-            <h1 className='text-2xl font-bold space-grotesk tracking-tight'>{jobListing.title}</h1>
-            <div className='flex flex-wrap gap-0 mt-2'>
-              <Badge >{formatJoblistingStatus(jobListing.status)}</Badge>
-              <JobListingBadges jobListing={jobListing} />
-
-            </div>
-          </div>
-
-
-          <div className='flex items-center gap-2 empty:-mt-4 space-grotesk'>
-            {canUpdate && (
-              <Button asChild variant='outline'>
-                <Link href={`/employer/job-listings/${jobListing.id}/edit`}><EditIcon className='size-4' /> Edit</Link>
-              </Button>
-            )}
-            <StatusUpdateButton 
-              status={jobListing.status} 
-              id={jobListing.id}
-              canChangeStatus={canChangeStatus}
-              hasReachedMax={hasReachedMax}
-            />
-            {jobListing.status === "published" && (
-              <FeaturedToggleButton 
-                isFeatured={jobListing.isFeatured} 
-                id={jobListing.id}
-                canChangeStatus={canChangeStatus}
-                hasReachedMax={hasReachedMax}
+          {/* Job Description */}
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Job Description
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <MarkdownPartial  
+                dialogMarkdown={<MarkdownRenderer source={jobListing.description}/>}
+                mainMarkdown ={<MarkdownRenderer className="prose prose-sm max-w-none" source={jobListing.description}/>}
+                dialogTitle="Job Listing Description"
               />
-            )}
-            {canDelete && (
-              <ActionButton className='cursor-pointer' variant='destructive' action={deleteJobListing.bind(null, jobListing.id)} requireAreYouSure={true} areYouSureDescription='You are about to delete the job listing'>
-                <Trash2 className='size-4' /> Delete
-              </ActionButton>
-            )}
-          </div>
+            </CardContent>
 
-
+          {/* Applications Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                Applications
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Suspense fallback={<SkeletonApplicationsLoader />}>
+                <Applications jobListingId={jobListing.id} />
+              </Suspense>
+            </CardContent>
+          </Card>
         </div>
-        <MarkdownPartial  
-        dialogMarkdown={<MarkdownRenderer source={jobListing.description}/>}
-        mainMarkdown ={<MarkdownRenderer className="prose-sm" source={jobListing.description}/>}
-        dialogTitle="Job Listing Description"
-        />
-        <Separator />
-        <div className="space-y-6">
-            <h2 className='text-lg font-semibold'>Applicants</h2>
-            <Suspense fallback={<SkeletonApplicationsLoader />}>
-              <Applications jobListingId={jobListing.id} />
-            </Suspense>
+        
+        {/* Sidebar */}
+        <div className="w-80 hidden xl:block">
+          <Suspense fallback={<JobListingSidebarSkeleton />}>
+            <SidebarContent jobListing={jobListing} />
+          </Suspense>
         </div>
-      
       </div>
   )
 
@@ -133,6 +199,15 @@ async function getJobListing(jobListingId: string, orgId: string) {
   return await db.query.JobListingTable.findFirst({
     where: and(eq(JobListingTable.id, jobListingId), eq(JobListingTable.organizationId, orgId))
   })
+}
+
+async function ApplicationCount({ jobListingId }: { jobListingId: string }) {
+  const result = await db.select({ count: count() })
+    .from(JobListingApplicationTable)
+    .where(eq(JobListingApplicationTable.jobListingId, jobListingId))
+  
+  const applicationCount = result[0]?.count || 0
+  return <span>{applicationCount} {applicationCount === 1 ? 'application' : 'applications'}</span>
 }
 function UpgradePopover({
   buttonText,

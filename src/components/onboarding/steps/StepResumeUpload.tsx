@@ -2,9 +2,9 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { Upload, FileText, Check, X } from "lucide-react"
+import { Upload, Check, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
+// import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
 import { StepData } from "../OnboardingStepper"
@@ -12,7 +12,7 @@ import { UploadDropzone } from "@/services/uploadthing/components/UploadThing"
 
 interface StepResumeUploadProps {
   data: StepData
-  updateData: (stepKey: keyof StepData, data: any) => void
+  updateData: (stepKey: keyof StepData, data: Record<string, unknown>) => void
   onNext: () => void
   onPrevious: () => void
   isFirst: boolean
@@ -24,8 +24,8 @@ export function StepResumeUpload({
   updateData, 
   onNext, 
   onPrevious, 
-  isFirst, 
-  isLast 
+  // isFirst,
+  // isLast
 }: StepResumeUploadProps) {
   const { toast } = useToast()
   const [formData, setFormData] = useState({
@@ -43,7 +43,7 @@ export function StepResumeUpload({
     onNext()
   }
 
-  const handleUploadComplete = (res: any[]) => {
+  const handleUploadComplete = (res: { url: string; name: string }[]) => {
     if (res && res.length > 0) {
       const uploadedFile = res[0]
       setFormData({
@@ -108,18 +108,18 @@ export function StepResumeUpload({
               </p>
             </div>
           ) : (
-            <Card className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950">
+            <Card className="border-featured/20 bg-featured/5 dark:border-featured/30 dark:bg-featured/10">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center w-8 h-8 bg-green-500 rounded-full">
+                    <div className="flex items-center justify-center w-8 h-8 bg-featured rounded-full">
                       <Check className="w-4 h-4 text-white" />
                     </div>
                     <div>
-                      <p className="font-medium text-green-800 dark:text-green-200">
+                      <p className="font-medium text-featured dark:text-featured">
                         Resume uploaded successfully!
                       </p>
-                      <p className="text-sm text-green-600 dark:text-green-400">
+                      <p className="text-sm text-featured/80 dark:text-featured/90">
                         Your resume is ready to be shared with employers.
                       </p>
                     </div>

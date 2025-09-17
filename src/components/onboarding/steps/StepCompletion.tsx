@@ -21,7 +21,7 @@ const completedFeatures = [
   {
     icon: Briefcase,
     title: "Job Preferences",
-    description: "We know what you're looking for"
+    description: "We know what you&apos;re looking for"
   },
   {
     icon: Upload,
@@ -94,13 +94,13 @@ export function StepCompletion({ onComplete }: StepCompletionProps) {
         className="flex justify-center"
       >
         <div className="relative">
-          <div className="flex items-center justify-center w-24 h-24 bg-green-500 rounded-full">
+          <div className="flex items-center justify-center w-24 h-24 bg-featured rounded-full">
             <CheckCircle className="w-12 h-12 text-white" />
           </div>
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="absolute -inset-2 border-4 border-green-200 border-t-green-500 rounded-full"
+            className="absolute -inset-2 border-4 border-featured/20 border-t-featured rounded-full"
           />
         </div>
       </motion.div>
@@ -117,7 +117,7 @@ export function StepCompletion({ onComplete }: StepCompletionProps) {
           <Sparkles className="w-8 h-8 text-yellow-500" />
         </h1>
         <p className="text-xl text-muted-foreground">
-          Your profile is ready and you're all set to find your dream job!
+          Your profile is ready and you&apos;re all set to find your dream job!
         </p>
       </motion.div>
 
@@ -139,8 +139,8 @@ export function StepCompletion({ onComplete }: StepCompletionProps) {
                 <Card className="text-left">
                   <CardContent className="p-4">
                     <div className="flex items-center gap-3">
-                      <div className="flex items-center justify-center w-10 h-10 bg-green-100 dark:bg-green-900 rounded-lg">
-                        <feature.icon className="w-5 h-5 text-green-600 dark:text-green-400" />
+                      <div className="flex items-center justify-center w-10 h-10   rounded-lg">
+                        <feature.icon className="w-5 h-5 " />
                       </div>
                       <div>
                         <h3 className="font-medium text-sm">{feature.title}</h3>
@@ -168,7 +168,7 @@ export function StepCompletion({ onComplete }: StepCompletionProps) {
           <CardContent className="p-6">
             <h3 className="font-semibold mb-3 flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-primary" />
-              What's Next?
+              What&apos;s Next?
             </h3>
             <div className="text-sm text-muted-foreground space-y-2 text-left">
               <p>• Browse thousands of job opportunities tailored to your preferences</p>

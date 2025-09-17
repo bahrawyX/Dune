@@ -23,7 +23,7 @@ export default async function BookmarksPage() {
         <Bookmark className="h-16 w-16 text-muted-foreground mb-4" />
         <h2 className="text-2xl font-semibold mb-2">No bookmarked jobs yet</h2>
         <p className="text-muted-foreground mb-6 max-w-md">
-          Start exploring job listings and bookmark the ones that interest you. They'll appear here for easy access.
+          Start exploring job listings and bookmark the ones that interest you. They&apos;ll appear here for easy access.
         </p>
         <Link 
           href="/job-seeker" 

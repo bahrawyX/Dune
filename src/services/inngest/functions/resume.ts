@@ -94,7 +94,7 @@ export const createAiSummaryOfUploadedResume = inngest.createFunction(
                 fileData: {
                   fileUri: fileUri,
                   mimeType: "application/pdf",
-                },
+                }
               } as any,
             ],
           },
@@ -104,7 +104,7 @@ export const createAiSummaryOfUploadedResume = inngest.createFunction(
 
     await step.run("save-ai-summary", async () => {
       try {
-        const textPart = result?.candidates?.[0]?.content?.parts?.find((p: any) => p && typeof p === 'object' && 'text' in p);
+        const textPart = result?.candidates?.[0]?.content?.parts?.find((p: unknown) => p && typeof p === 'object' && 'text' in p);
         const text = textPart && 'text' in textPart ? textPart.text : null;
         
         if (typeof text !== "string" || !text.trim()) {

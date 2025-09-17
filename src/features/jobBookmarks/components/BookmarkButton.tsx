@@ -35,7 +35,7 @@ export function BookmarkButton({
       if (result.error) {
         toast.error(result.message)
       } else {
-        setBookmarked(result.bookmarked)
+        setBookmarked(result.bookmarked ?? false)
         toast.success(result.message)
       }
     })

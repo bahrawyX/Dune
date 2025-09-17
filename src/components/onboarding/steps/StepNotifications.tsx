@@ -2,16 +2,16 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { Bell, Mail, Calendar, Briefcase } from "lucide-react"
+import { Bell, Mail, Briefcase } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
+// import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { StepData } from "../OnboardingStepper"
 
 interface StepNotificationsProps {
   data: StepData
-  updateData: (stepKey: keyof StepData, data: any) => void
+  updateData: (stepKey: keyof StepData, data: Record<string, unknown>) => void
   onNext: () => void
   onPrevious: () => void
   isFirst: boolean
@@ -23,8 +23,8 @@ export function StepNotifications({
   updateData, 
   onNext, 
   onPrevious, 
-  isFirst, 
-  isLast 
+  // isFirst,
+  // isLast
 }: StepNotificationsProps) {
   const [formData, setFormData] = useState({
     emailAlerts: data.notifications.emailAlerts ?? true,
@@ -63,7 +63,7 @@ export function StepNotifications({
           Notification Preferences
         </h3>
         <p className="text-muted-foreground">
-          Choose how you'd like to stay updated about job opportunities and application status.
+          Choose how you&apos;d like to stay updated about job opportunities and application status.
         </p>
       </div>
 
@@ -107,7 +107,7 @@ export function StepNotifications({
                   </div>
                 </div>
                 <textarea
-                  placeholder="e.g., I'm looking for a remote software engineering role with focus on React and Node.js..."
+                  placeholder="e.g., I&apos;m looking for a remote software engineering role with focus on React and Node.js..."
                   value={formData.aiPrompt}
                   onChange={(e) => setFormData(prev => ({ ...prev, aiPrompt: e.target.value }))}
                   className="w-full p-3 border border-input rounded-lg resize-none h-24 text-sm"
@@ -133,7 +133,7 @@ export function StepNotifications({
             </p>
             {!formData.emailAlerts && (
               <p className="text-amber-600 dark:text-amber-400 font-medium">
-                ⚠️ You won't receive any email notifications with current settings
+                ⚠️ You won&apos;t receive any email notifications with current settings
               </p>
             )}
           </div>

@@ -21,10 +21,13 @@ import {
 import { Separator } from "@radix-ui/react-separator"
   
   export default async function UserResumePage() {
-    const { userId } = await getCurrentUser()
+    const { userId, user } = await getCurrentUser({ allData: true })
     if (userId == null) return notFound()
+    
+    // Use the actual database user ID, matching the logic in UploadThing router
+    const actualUserId = user?.id || userId
   
-    const userResume = await getUserResume(userId)
+    const userResume = await getUserResume(actualUserId)
     const hasResume = userResume != null
      
     return (
@@ -77,7 +80,7 @@ import { Separator } from "@radix-ui/react-separator"
             </Card>
 
             <Suspense fallback={<AISummarySkeleton />}>
-              <AISummaryCard userId={userId} />
+              <AISummaryCard userId={actualUserId} />
             </Suspense>
           </>
         ) : (
@@ -191,10 +194,11 @@ import { Separator } from "@radix-ui/react-separator"
   }
   
   async function getUserResume(userId: string) {
+    console.log('getUserResume called with userId:', userId)
     
     const userResume = await db.query.UserResumeTable.findFirst({
       where: eq(UserResumeTable.userId, userId),
     })
-    console.log('User resume:', userResume)
+    console.log('User resume found:', userResume ? 'YES' : 'NO', userResume)
     return userResume
   }

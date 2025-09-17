@@ -7,7 +7,7 @@ export default async function AppSideBar({content, footerButton, children}: {con
   // Removed onboarding check - users go directly to main app after sign-in
   return (
     <>
-      <SidebarProvider className="overflow-y-hidden">
+      <SidebarProvider>
         <AppSidebarClient>
             <Sidebar collapsible="icon" className="overflow-hidden">
               <SidebarHeader className="flex-row items-center">
@@ -28,7 +28,7 @@ export default async function AppSideBar({content, footerButton, children}: {con
               </SidebarFooter>
 
             </Sidebar>
-            <main className="flex-1">
+            <main className="flex-1 overflow-auto">
               {children}
             </main>
         </AppSidebarClient>

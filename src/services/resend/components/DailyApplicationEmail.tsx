@@ -1,4 +1,4 @@
-import { JobListingApplicationTable, JobListingTable } from "@/app/drizzle/schema"
+import { JobListingApplicationTable } from "@/app/drizzle/schema"
 import {
 
   Container,

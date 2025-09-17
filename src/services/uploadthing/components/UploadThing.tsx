@@ -1,8 +1,7 @@
 "use client"
 import {
-    generateUploadButton,
-    generateUploadDropzone,
-  } from "@uploadthing/react";
+  generateUploadDropzone,
+} from "@uploadthing/react";
   import { CustomFileRouter } from "../router";
 import { ComponentProps } from "react";
 import { cn } from "@/lib/utils";

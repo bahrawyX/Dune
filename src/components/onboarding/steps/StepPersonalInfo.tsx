@@ -12,19 +12,19 @@ import { StepData } from "../OnboardingStepper"
 
 interface StepPersonalInfoProps {
   data: StepData
-  updateData: (stepKey: keyof StepData, data: any) => void
+  updateData: (stepKey: keyof StepData, data: Record<string, unknown>) => void
   onNext: () => void
   onPrevious: () => void
-  isFirst: boolean
-  isLast: boolean
+  isFirst?: boolean
+  isLast?: boolean
 }
 
 export function StepPersonalInfo({ 
   data, 
   updateData, 
   onNext, 
-  isFirst, 
-  isLast 
+  // isFirst,
+  // isLast
 }: StepPersonalInfoProps) {
   const { user } = useUser()
   const { toast } = useToast()
@@ -91,7 +91,7 @@ export function StepPersonalInfo({
           <User className="w-8 h-8 text-primary" />
         </div>
         <h3 className="text-2xl font-semibold text-foreground mb-2">
-          Welcome! Let's start with your name
+          Welcome! Let&apos;s start with your name
         </h3>
         <p className="text-muted-foreground">
           This information will be used to personalize your job search experience.

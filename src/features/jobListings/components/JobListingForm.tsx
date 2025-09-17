@@ -270,7 +270,7 @@ const JobListingForm = ({jobListing}: {jobListing?: Pick<typeof JobListingTable.
             <FormLabel>Skills</FormLabel>
             <FormControl>
               <SkillsInput
-                value={field.value}
+                value={field.value || []}
                 onChange={field.onChange}
                 placeholder="Add required skills (e.g., React, TypeScript, Node.js)"
               />

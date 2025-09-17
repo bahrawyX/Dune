@@ -3,7 +3,7 @@
 import { db } from "@/app/drizzle/db"
 import { JobBookmarkTable } from "@/app/drizzle/schema"
 import { getCurrentUser } from "@/services/clerk/lib/getCurrentAuth"
-import { and, eq } from "drizzle-orm"
+import { and, eq, or } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 
 export async function toggleJobBookmark(jobListingId: string) {
@@ -74,4 +74,23 @@ export async function isJobBookmarked(userId: string, jobListingId: string): Pro
     ),
   })
   return !!bookmark
+}
+
+export async function getBulkBookmarkStatus(userId: string, jobListingIds: string[]): Promise<Record<string, boolean>> {
+  if (!jobListingIds.length) return {}
+  
+  const bookmarks = await db.query.JobBookmarkTable.findMany({
+    where: and(
+      eq(JobBookmarkTable.userId, userId),
+      or(...jobListingIds.map(id => eq(JobBookmarkTable.jobListingId, id)))
+    ),
+    columns: {
+      jobListingId: true
+    }
+  })
+  
+  return jobListingIds.reduce((acc, id) => {
+    acc[id] = bookmarks.some(bookmark => bookmark.jobListingId === id)
+    return acc
+  }, {} as Record<string, boolean>)
 }

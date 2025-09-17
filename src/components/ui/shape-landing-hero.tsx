@@ -1,10 +1,8 @@
 "use client";
 
-import { motion, useMotionValue, useTransform, animate } from "framer-motion";
+import { motion } from "framer-motion";
 import { Circle } from "lucide-react";
-import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
 import Image from "next/image";
 
 
@@ -75,7 +73,7 @@ function ElegantShape({
 }
 
 function HeroGeometric({
-    badge = "PRODUCTION READY JOB BOARD PLATFORM",
+    badge = "PRODUCTION READY",
     title1 = "Dune Job Board",
     title2 = "Professional Recruitment Platform",
 }: {

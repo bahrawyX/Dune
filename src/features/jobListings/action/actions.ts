@@ -1,6 +1,6 @@
 "use server"
 import z from "zod";
-import { jobListingAiSearchSchema, JobListingSchema, newjobListingApplicationSchema } from "./schema";
+import { jobListingAiSearchSchema, JobListingSchema } from "./schema";
 import { getCurrentOrganization, getCurrentUser } from "@/services/clerk/lib/getCurrentAuth";
 import { redirect } from "next/navigation";
 import { insertJobListing, updateJobListing as updateJobListingDB, deleteJobListing as deleteJobListingDB } from "../db/jobListings";
@@ -11,8 +11,8 @@ import { hasOrgUserPermission } from "@/services/clerk/lib/orgUserPermissions";
 import { getNextJobListingStatus } from "../util/utils";
 import { hasReachedMaxFeaturedJobListings, hasReachedMaxPublishedJobListings } from "../util/planFeaturesHelper";
 import { revalidatePath } from "next/cache";
-import { inngest } from "@/services/inngest/client";
-import { getUserResume } from "@/app/(job-seeker)/job-listings/[jobListingId]/page";
+// import { inngest } from "@/services/inngest/client";
+// import { getUserResume } from "@/app/(job-seeker)/job-listings/[jobListingId]/page";
 import { getMatchingJobListings } from "@/services/inngest/ai/getMatchingListings";
 export async function createJobListing(unSafeData:z.infer<typeof JobListingSchema>){
     const {orgId, organization} = await getCurrentOrganization({allData: true});

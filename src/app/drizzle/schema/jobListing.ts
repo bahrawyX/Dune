@@ -68,7 +68,21 @@ import {
       createdAt,
       updatedAt,
     },
-    table => [index().on(table.stateAbbreviation)]
+    table => ({
+      stateIdx: index("job_listings_state_idx").on(table.stateAbbreviation),
+      cityIdx: index("job_listings_city_idx").on(table.city),
+      statusIdx: index("job_listings_status_idx").on(table.status),
+      postedAtIdx: index("job_listings_posted_at_idx").on(table.postedAt),
+      experienceIdx: index("job_listings_experience_idx").on(table.experienceLevel),
+      typeIdx: index("job_listings_type_idx").on(table.type),
+      locationReqIdx: index("job_listings_location_req_idx").on(table.locationRequirement),
+      featuredIdx: index("job_listings_featured_idx").on(table.isFeatured),
+      organizationIdx: index("job_listings_org_idx").on(table.organizationId),
+      skillsIdx: index("job_listings_skills_idx").using("gin", table.skills),
+      // Composite indexes for common query patterns
+      statusPostedIdx: index("job_listings_status_posted_idx").on(table.status, table.postedAt),
+      statusFeaturedIdx: index("job_listings_status_featured_idx").on(table.status, table.isFeatured),
+    })
   )
   
   export const jobListingReferences = relations(
