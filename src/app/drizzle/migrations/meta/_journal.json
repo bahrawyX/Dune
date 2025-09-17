@@ -71,6 +71,20 @@
       "when": 1758109717739,
       "tag": "0009_slippery_molecule_man",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1758143666614,
+      "tag": "0010_lying_warhawk",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1758143950646,
+      "tag": "0011_confused_iron_lad",
+      "breakpoints": true
     }
   ]
 }

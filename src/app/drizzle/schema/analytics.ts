@@ -1,4 +1,4 @@
-import { pgTable, varchar, json, integer, timestamp, index, pgEnum } from "drizzle-orm/pg-core"
+import { pgTable, varchar, json, integer, timestamp, index, pgEnum, uuid } from "drizzle-orm/pg-core"
 import { createdAt, id } from "../schemaHelpers"
 import { relations } from "drizzle-orm"
 import { UserTable } from "./user"
@@ -31,7 +31,7 @@ export const AnalyticsEventTable = pgTable("analytics_events", {
   eventType: eventTypeEnum("event_type").notNull(),
   userId: varchar("user_id").references(() => UserTable.id, { onDelete: "cascade" }),
   organizationId: varchar("organization_id").references(() => OrganizationTable.id, { onDelete: "cascade" }),
-  jobListingId: varchar("job_listing_id").references(() => JobListingTable.id, { onDelete: "cascade" }),
+  jobListingId: uuid("job_listing_id").references(() => JobListingTable.id, { onDelete: "cascade" }),
   sessionId: varchar("session_id"),
   ipAddress: varchar("ip_address"),
   userAgent: varchar("user_agent"),
@@ -68,7 +68,7 @@ export const DailyMetricsTable = pgTable("daily_metrics", {
 // Job listing performance metrics
 export const JobListingMetricsTable = pgTable("job_listing_metrics", {
   id,
-  jobListingId: varchar("job_listing_id").notNull().references(() => JobListingTable.id, { onDelete: "cascade" }),
+  jobListingId: uuid("job_listing_id").notNull().references(() => JobListingTable.id, { onDelete: "cascade" }),
   totalViews: integer("total_views").notNull().default(0),
   uniqueViews: integer("unique_views").notNull().default(0),
   totalApplications: integer("total_applications").notNull().default(0),
