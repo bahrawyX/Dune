@@ -4,7 +4,7 @@ import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Bar, BarCh
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface ChartData {
-  [key: string]: any
+  [key: string]: string | number | undefined
 }
 
 interface BaseChartProps {

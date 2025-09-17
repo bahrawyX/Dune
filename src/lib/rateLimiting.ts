@@ -83,7 +83,7 @@ function getClientIP(request: NextRequest): string {
   }
   
   // Fallback to a default IP if none found
-  return request.ip || '127.0.0.1'
+  return '127.0.0.1'
 }
 
 // Common rate limit configurations

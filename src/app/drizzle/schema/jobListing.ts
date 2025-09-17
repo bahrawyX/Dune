@@ -79,7 +79,6 @@ import {
       featuredIdx: index("job_listings_featured_idx").on(table.isFeatured),
       organizationIdx: index("job_listings_org_idx").on(table.organizationId),
       skillsIdx: index("job_listings_skills_idx").using("gin", table.skills),
-      // Composite indexes for common query patterns
       statusPostedIdx: index("job_listings_status_posted_idx").on(table.status, table.postedAt),
       statusFeaturedIdx: index("job_listings_status_featured_idx").on(table.status, table.isFeatured),
     })

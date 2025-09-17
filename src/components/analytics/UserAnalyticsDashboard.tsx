@@ -34,7 +34,7 @@ interface UserAnalyticsData {
   recentEvents: Array<{
     eventType: string
     jobListingId: string | null
-    metadata: any
+    metadata: Record<string, unknown>
     createdAt: string
   }>
   dailyActivity: Array<{
@@ -383,7 +383,7 @@ export default function UserAnalyticsDashboard() {
                 Job Search Efficiency
               </h4>
               <p className="text-sm text-muted-foreground">
-                You're averaging {Math.round(summary.totalJobViews / Math.max(summary.totalJobSearches, 1))} 
+                You&apos;re averaging {Math.round(summary.totalJobViews / Math.max(summary.totalJobSearches, 1))} 
                 job views per search. Consider refining your search criteria for better targeted results.
               </p>
             </div>
@@ -393,7 +393,7 @@ export default function UserAnalyticsDashboard() {
                 Application Rate
               </h4>
               <p className="text-sm text-muted-foreground">
-                You're applying to {Math.round((summary.totalApplications / Math.max(summary.totalJobViews, 1)) * 100)}% 
+                You&apos;re applying to {Math.round((summary.totalApplications / Math.max(summary.totalJobViews, 1)) * 100)}% 
                 of jobs you view. This shows good selectivity in your application process.
               </p>
             </div>
