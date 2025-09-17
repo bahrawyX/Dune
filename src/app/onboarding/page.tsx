@@ -8,7 +8,7 @@ export default function OnboardingPage() {
   const router = useRouter()
   
   useEffect(() => {
-    router.replace("/")
+    router.replace("/job-seeker")
   }, [router])
 
   return (

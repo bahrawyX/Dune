@@ -4,6 +4,7 @@ import z from "zod";
 export const JobListingSchema = z.object({
         title: z.string().min(1 , "Title is required"),
         description: z.string().min(1 , "Description is required"),
+        skills: z.array(z.string()).default([]),
         wage: z.number().int().positive().nullable(),
         experienceLevel: z.enum(experienceLevels).default("junior"),
         locationRequirement: z.enum(locationRequirements).default("on-site"),

@@ -54,6 +54,7 @@ import {
         .notNull(),
       title: varchar().notNull(),
       description: text().notNull(),
+      skills: text().array().default([]).notNull(),
       wage: integer(),
       wageInterval: wageIntervalEnum(),
       stateAbbreviation: varchar(),

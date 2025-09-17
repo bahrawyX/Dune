@@ -343,6 +343,24 @@ export async function getAiJobListingSearchResults(unsafe: z.infer<typeof jobLis
 }
 function getPublicJobListings(){
   return db.query.JobListingTable.findMany({
-    where: eq(JobListingTable.status, "published")
+    where: eq(JobListingTable.status, "published"),
+    columns: {
+      id: true,
+      title: true,
+      description: true,
+      skills: true,
+      wage: true,
+      wageInterval: true,
+      stateAbbreviation: true,
+      city: true,
+      experienceLevel: true,
+      locationRequirement: true,
+      type: true,
+    },
+    with: {
+      organization: {
+        columns: { name: true },
+      },
+    },
   })
 }

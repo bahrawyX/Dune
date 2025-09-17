@@ -1,0 +1,1 @@
+ALTER TABLE "job_bookmarks" ALTER COLUMN "jobListingId" SET DATA TYPE uuid;

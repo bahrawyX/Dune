@@ -21,14 +21,16 @@ import { Button } from '@/components/ui/button';
 import { LoadingSwap } from '@/components/LoadingSwap';
 import { createJobListing, updateJobListing } from '../action/actions';
 import { toast } from 'sonner';
+import { SkillsInput } from './SkillsInput';
 
 const NONE_SELECT_VALUE = "none";
-const JobListingForm = ({jobListing}: {jobListing?: Pick<typeof JobListingTable.$inferSelect, "title" | "description" | "wage" | "experienceLevel" | "locationRequirement" | "type" | "wageInterval" | "stateAbbreviation" | "city" | "status" | "isFeatured" | "id">}) => {
+const JobListingForm = ({jobListing}: {jobListing?: Pick<typeof JobListingTable.$inferSelect, "title" | "description" | "skills" | "wage" | "experienceLevel" | "locationRequirement" | "type" | "wageInterval" | "stateAbbreviation" | "city" | "status" | "isFeatured" | "id">}) => {
     const form = useForm({
         resolver: zodResolver(JobListingSchema),
         defaultValues:{
             title: jobListing?.title ?? "",
             description: jobListing?.description ?? "",
+            skills: jobListing?.skills ?? [],
             wage: jobListing?.wage ?? null,
             experienceLevel: jobListing?.experienceLevel ?? "junior",
             locationRequirement: jobListing?.locationRequirement ?? "on-site",
@@ -260,6 +262,23 @@ const JobListingForm = ({jobListing}: {jobListing?: Pick<typeof JobListingTable.
           )}
         />
       </div>
+      <FormField
+        name="skills"
+        control={form.control}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Skills</FormLabel>
+            <FormControl>
+              <SkillsInput
+                value={field.value}
+                onChange={field.onChange}
+                placeholder="Add required skills (e.g., React, TypeScript, Node.js)"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
       <FormField
         name="description"
         control={form.control}

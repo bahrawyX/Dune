@@ -52,7 +52,7 @@ async function LayoutSuspense({children}: {children: ReactNode}) {
               </SidebarGroupContent>
               <SidebarNavMenuGroup    
                 items={[
-                  {href: "/", icon: <ClipboardPen className="w-4 h-4" />, label: "Job Board"},
+                  {href: "/job-seeker", icon: <ClipboardPen className="w-4 h-4" />, label: "Job Board"},
                 ]}
                 className="mt-auto "
               />

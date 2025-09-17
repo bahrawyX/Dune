@@ -28,7 +28,7 @@ export default async function AppSideBar({content, footerButton, children}: {con
               </SidebarFooter>
 
             </Sidebar>
-            <main className="flex-1 ">
+            <main className="flex-1">
               {children}
             </main>
         </AppSidebarClient>

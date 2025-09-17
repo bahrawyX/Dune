@@ -27,8 +27,10 @@ export function JobListingBadges({
     experienceLevel,
     locationRequirement,
     isFeatured,
+    skills,
   },
   className,
+  showSkills = true,
 }: {
   jobListing: Pick<
     typeof JobListingTable.$inferSelect,
@@ -40,8 +42,10 @@ export function JobListingBadges({
     | "experienceLevel"
     | "locationRequirement"
     | "isFeatured"
+    | "skills"
   >
   className?: string
+  showSkills?: boolean
 }) {
   const badgeProps = {
     variant: "outline",
@@ -85,6 +89,33 @@ export function JobListingBadges({
         <GraduationCapIcon className="size-5" />
         {formatExperienceLevel(experienceLevel)}
       </Badge>
+      {showSkills && skills && skills.length > 0 && (
+        <>
+          {skills.slice(0, 3).map((skill, index) => (
+            <Badge 
+              key={index} 
+              {...badgeProps}
+              className={cn(
+                className,
+                "bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-300"
+              )}
+            >
+              {skill}
+            </Badge>
+          ))}
+          {skills.length > 3 && (
+            <Badge 
+              {...badgeProps}
+              className={cn(
+                className,
+                "bg-gray-50 border-gray-200 text-gray-600 dark:bg-gray-900/20 dark:border-gray-800 dark:text-gray-400"
+              )}
+            >
+              +{skills.length - 3} more
+            </Badge>
+          )}
+        </>
+      )}
     </>
   )
 }

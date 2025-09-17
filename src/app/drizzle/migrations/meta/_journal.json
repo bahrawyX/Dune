@@ -8,6 +8,34 @@
       "when": 1756567105800,
       "tag": "0000_windy_nico_minoru",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1758046681736,
+      "tag": "0001_common_hellion",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1758050964675,
+      "tag": "0002_pretty_avengers",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1758059847212,
+      "tag": "0003_silly_molecule_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1758069435608,
+      "tag": "0004_skinny_pride",
+      "breakpoints": true
     }
   ]
 }

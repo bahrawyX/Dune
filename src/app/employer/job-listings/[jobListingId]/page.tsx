@@ -73,7 +73,7 @@ async function SuspendedPage({params}: Props) {
 
           <div>
             <h1 className='text-2xl font-bold space-grotesk tracking-tight'>{jobListing.title}</h1>
-            <div className='flex flex-wrap gap-2 mt-2'>
+            <div className='flex flex-wrap gap-0 mt-2'>
               <Badge >{formatJoblistingStatus(jobListing.status)}</Badge>
               <JobListingBadges jobListing={jobListing} />
 

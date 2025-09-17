@@ -103,3 +103,24 @@ export function formatWage(wage: number, wageInterval: WageInterval) {
   
     return locationParts.join(", ")
   }
+
+  /**
+   * Normalizes salary to annual equivalent for comparison
+   * @param wage - The wage amount
+   * @param wageInterval - The wage interval (hourly, monthly, yearly)
+   * @returns Annual salary equivalent
+   */
+  export function normalizeToAnnualSalary(wage: number, wageInterval: WageInterval): number {
+    switch (wageInterval) {
+      case "hourly":
+        // Assuming 40 hours/week * 52 weeks = 2080 hours/year
+        return wage * 2080
+      case "monthly":
+        // 12 months per year
+        return wage * 12
+      case "yearly":
+        return wage
+      default:
+        throw new Error(`Unknown wage interval: ${wageInterval satisfies never}`)
+    }
+  }

@@ -14,6 +14,7 @@ const listingSchema = z.object({
   id: z.string(),
   title: z.string(),
   description: z.string(),
+  skills: z.array(z.string()),
   wage: z.number().nullable(),
   wageInterval: z.enum(wageIntervals).nullable(),
   stateAbbreviation: z.string().nullable(),
@@ -33,7 +34,13 @@ export async function getMatchingJobListings(
   const agent = createAgent({
     name: "Job Matching Agent",
     description: "Agent for matching users with job listings",
-    system: `You are an expert at matching people with jobs based on their specific experience, and requirements. The provided user prompt will be a description that can include information about themselves as well what they are looking for in a job. ${
+    system: `You are an expert at matching people with jobs based on their specific experience, and requirements. The provided user prompt will be a description that can include information about themselves as well what they are looking for in a job, including salary expectations. When matching jobs, pay attention to:
+    - Experience level requirements
+    - Job type (full-time, part-time, internship)  
+    - Location requirements (remote, hybrid, on-site)
+    - Salary expectations - wages are provided in different intervals (hourly, monthly, yearly). Convert them to compare: hourly * 2080 = yearly, monthly * 12 = yearly.
+    - Skills and job descriptions
+    ${
       maxNumberOfJobs
         ? `You are to return up to ${maxNumberOfJobs} jobs.`
         : `Return all jobs that match their requirements.`
