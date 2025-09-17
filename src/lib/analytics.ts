@@ -29,7 +29,7 @@ export interface TrackEventParams {
   jobListingId?: string
   pathname?: string
   searchQuery?: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
   skipAuth?: boolean // For tracking events without user context
 }
 
@@ -38,7 +38,7 @@ export interface ClientEventData {
   pathname?: string
   searchQuery?: string
   jobListingId?: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 /**
@@ -85,24 +85,24 @@ export async function trackEvent({
     const referrer = headersList.get('referer') || undefined
 
     // Generate session ID if not in metadata
-    const sessionId = metadata.sessionId || generateSessionId()
+    const sessionId = (metadata.sessionId as string) || generateSessionId()
 
     await db.insert(AnalyticsEventTable).values({
       eventType,
-      userId,
-      organizationId,
-      jobListingId,
+      userId: userId || null,
+      organizationId: organizationId || null,
+      jobListingId: jobListingId || null,
       sessionId,
       ipAddress,
       userAgent,
       referrer,
       pathname,
       searchQuery,
-      metadata: {
+      metadata: JSON.parse(JSON.stringify({
         ...metadata,
         timestamp: new Date().toISOString(),
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-      }
+      }))
     })
 
     // Update daily metrics asynchronously
@@ -154,7 +154,7 @@ export async function trackClientEvent(data: ClientEventData) {
 /**
  * Track page view - commonly used
  */
-export async function trackPageView(pathname?: string, metadata?: Record<string, any>) {
+export async function trackPageView(pathname?: string, metadata?: Record<string, unknown>) {
   return trackEvent({
     eventType: 'page_view',
     pathname: pathname || (typeof window !== 'undefined' ? window.location.pathname : undefined),
@@ -165,7 +165,7 @@ export async function trackPageView(pathname?: string, metadata?: Record<string,
 /**
  * Track job search with query
  */
-export async function trackJobSearch(searchQuery: string, metadata?: Record<string, any>) {
+export async function trackJobSearch(searchQuery: string, metadata?: Record<string, unknown>) {
   return trackEvent({
     eventType: 'job_search',
     searchQuery,
@@ -176,7 +176,7 @@ export async function trackJobSearch(searchQuery: string, metadata?: Record<stri
 /**
  * Track job view
  */
-export async function trackJobView(jobListingId: string, metadata?: Record<string, any>) {
+export async function trackJobView(jobListingId: string, metadata?: Record<string, unknown>) {
   return trackEvent({
     eventType: 'job_view',
     jobListingId,
@@ -187,7 +187,7 @@ export async function trackJobView(jobListingId: string, metadata?: Record<strin
 /**
  * Track job application
  */
-export async function trackJobApplication(jobListingId: string, metadata?: Record<string, any>) {
+export async function trackJobApplication(jobListingId: string, metadata?: Record<string, unknown>) {
   return trackEvent({
     eventType: 'job_apply',
     jobListingId,
@@ -287,7 +287,7 @@ export function useAnalytics() {
     trackClientEvent(data)
   }
 
-  const trackPageView = (pathname?: string, metadata?: Record<string, any>) => {
+  const trackPageView = (pathname?: string, metadata?: Record<string, unknown>) => {
     trackClientEvent({
       eventType: 'page_view',
       pathname,
@@ -295,7 +295,7 @@ export function useAnalytics() {
     })
   }
 
-  const trackJobSearch = (searchQuery: string, metadata?: Record<string, any>) => {
+  const trackJobSearch = (searchQuery: string, metadata?: Record<string, unknown>) => {
     trackClientEvent({
       eventType: 'job_search',
       searchQuery,
@@ -303,7 +303,7 @@ export function useAnalytics() {
     })
   }
 
-  const trackJobView = (jobListingId: string, metadata?: Record<string, any>) => {
+  const trackJobView = (jobListingId: string, metadata?: Record<string, unknown>) => {
     trackClientEvent({
       eventType: 'job_view',
       jobListingId,
@@ -311,7 +311,7 @@ export function useAnalytics() {
     })
   }
 
-  const trackJobBookmark = (jobListingId: string, metadata?: Record<string, any>) => {
+  const trackJobBookmark = (jobListingId: string, metadata?: Record<string, unknown>) => {
     trackClientEvent({
       eventType: 'job_bookmark',
       jobListingId,

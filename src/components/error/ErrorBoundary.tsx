@@ -126,7 +126,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
 // Hook for manual error reporting
 export function useErrorReporting() {
-  const reportError = async (error: Error | string, context?: Record<string, any>) => {
+  const reportError = async (error: Error | string, context?: Record<string, unknown>) => {
     const errorObj = typeof error === "string" ? new Error(error) : error
 
     try {

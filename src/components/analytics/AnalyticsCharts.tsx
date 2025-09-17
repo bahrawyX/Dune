@@ -71,7 +71,7 @@ export function AnalyticsLineChart({ data, title, description, xDataKey, yDataKe
               fontSize={12}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value: any) => `${value}`}
+              tickFormatter={(value: string | number) => `${value}`}
             />
             <Tooltip
               contentStyle={{
@@ -118,7 +118,7 @@ export function AnalyticsBarChart({ data, title, description, xDataKey, yDataKey
               fontSize={12}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value: any) => `${value}`}
+              tickFormatter={(value: string | number) => `${value}`}
             />
             <Tooltip
               contentStyle={{
@@ -158,7 +158,7 @@ export function AnalyticsAreaChart({ data, title, description, xDataKey, yDataKe
               fontSize={12}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value: any) => `${value}`}
+              tickFormatter={(value: string | number) => `${value}`}
             />
             <Tooltip
               contentStyle={{
@@ -199,7 +199,7 @@ export function AnalyticsPieChart({ data, title, description, dataKey, nameKey, 
               cx="50%"
               cy="50%"
               outerRadius={100}
-              label={({ name, percent }: any) => `${name} ${(percent * 100).toFixed(0)}%`}
+              label={(props: { name?: string; percent?: number }) => props.name && props.percent ? `${props.name} ${(props.percent * 100).toFixed(0)}%` : ''}
             >
               {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />

@@ -8,7 +8,7 @@ interface PerformanceMetric {
   value: number
   timestamp: number
   url: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 // Navigation timing metrics
@@ -99,7 +99,7 @@ class PerformanceMonitor {
 
     const observer = new PerformanceObserver((list) => {
       const entries = list.getEntries()
-      const lastEntry = entries[entries.length - 1] as any
+      const lastEntry = entries[entries.length - 1] as PerformanceEntry
       
       this.recordMetric({
         name: "web-vitals.lcp",
@@ -107,7 +107,7 @@ class PerformanceMonitor {
         timestamp: Date.now(),
         url: window.location.href,
         metadata: {
-          element: lastEntry.element?.tagName
+          element: (lastEntry as any).element?.tagName
         }
       })
     })
@@ -123,10 +123,10 @@ class PerformanceMonitor {
     if (!("PerformanceObserver" in window)) return
 
     const observer = new PerformanceObserver((list) => {
-      list.getEntries().forEach((entry: any) => {
+      list.getEntries().forEach((entry: PerformanceEntry) => {
         this.recordMetric({
           name: "web-vitals.fid",
-          value: entry.processingStart - entry.startTime,
+          value: (entry as any).processingStart - entry.startTime,
           timestamp: Date.now(),
           url: window.location.href
         })
@@ -145,20 +145,21 @@ class PerformanceMonitor {
 
     let clsValue = 0
     let sessionValue = 0
-    let sessionEntries: any[] = []
+    let sessionEntries: PerformanceEntry[] = []
 
     const observer = new PerformanceObserver((list) => {
-      list.getEntries().forEach((entry: any) => {
-        if (!entry.hadRecentInput) {
+      list.getEntries().forEach((entry: PerformanceEntry) => {
+        const clsEntry = entry as any
+        if (!clsEntry.hadRecentInput) {
           const firstSessionEntry = sessionEntries[0]
           const lastSessionEntry = sessionEntries[sessionEntries.length - 1]
 
-          if (sessionValue && entry.startTime - lastSessionEntry.startTime < 1000 &&
-              entry.startTime - firstSessionEntry.startTime < 5000) {
-            sessionValue += entry.value
+          if (sessionValue && entry.startTime - (lastSessionEntry as any).startTime < 1000 &&
+              entry.startTime - (firstSessionEntry as any).startTime < 5000) {
+            sessionValue += clsEntry.value
             sessionEntries.push(entry)
           } else {
-            sessionValue = entry.value
+            sessionValue = clsEntry.value
             sessionEntries = [entry]
           }
 
@@ -223,7 +224,7 @@ class PerformanceMonitor {
     }
   }
 
-  public trackCustomMetric(name: string, value: number, metadata?: Record<string, any>) {
+  public trackCustomMetric(name: string, value: number, metadata?: Record<string, unknown>) {
     this.recordMetric({
       name: `custom.${name}`,
       value,
@@ -277,7 +278,7 @@ export function usePerformanceMonitor() {
     }
   }, [])
 
-  const trackCustomMetric = (name: string, value: number, metadata?: Record<string, any>) => {
+  const trackCustomMetric = (name: string, value: number, metadata?: Record<string, unknown>) => {
     monitor.current?.trackCustomMetric(name, value, metadata)
   }
 

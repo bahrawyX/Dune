@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, ReactNode } from "react"
 import { initializePerformanceMonitoring, getPerformanceMonitor } from "@/lib/performance"
 
 interface PerformanceContextType {
-  trackCustomMetric: (name: string, value: number, metadata?: Record<string, any>) => void
+  trackCustomMetric: (name: string, value: number, metadata?: Record<string, unknown>) => void
   startTimer: (name: string) => () => void
 }
 
@@ -20,7 +20,7 @@ export function PerformanceMonitoringProvider({ children }: PerformanceMonitorin
     initializePerformanceMonitoring()
   }, [])
 
-  const trackCustomMetric = (name: string, value: number, metadata?: Record<string, any>) => {
+  const trackCustomMetric = (name: string, value: number, metadata?: Record<string, unknown>) => {
     const monitor = getPerformanceMonitor()
     monitor?.trackCustomMetric(name, value, metadata)
   }
