@@ -22,9 +22,11 @@ import { LoadingSwap } from '@/components/LoadingSwap';
 import { createJobListing, updateJobListing } from '../action/actions';
 import { toast } from 'sonner';
 import { SkillsInput } from './SkillsInput';
+import { useRouter } from 'next/navigation';
 
 const NONE_SELECT_VALUE = "none";
 const JobListingForm = ({jobListing}: {jobListing?: Pick<typeof JobListingTable.$inferSelect, "title" | "description" | "skills" | "wage" | "experienceLevel" | "locationRequirement" | "type" | "wageInterval" | "stateAbbreviation" | "city" | "status" | "isFeatured" | "id">}) => {
+    const router = useRouter();
     const form = useForm({
         resolver: zodResolver(JobListingSchema),
         defaultValues:{
@@ -49,21 +51,14 @@ const JobListingForm = ({jobListing}: {jobListing?: Pick<typeof JobListingTable.
          if (res?.error) {
            toast.error(res.message);
          } else if (res) {
-           // This shouldn't happen if redirect works, but just in case
-           toast.success(jobListing ? "Job listing updated successfully!" : "Job listing created successfully!");
+           toast.success(res.message);
+           // For new job listings, redirect to the created job listing page
+           if (!jobListing && 'jobListingId' in res) {
+             router.push(`/employer/job-listings/${res.jobListingId}`);
+           }
          }
-         // If no res is returned, it means redirect was called successfully
        } catch (error) {
-         // Check if this is a Next.js redirect error (which is expected)
-        if (error && typeof error === 'object' && 'digest' in error && 
-            (error as Record<string, unknown>).digest && 
-            String((error as Record<string, unknown>).digest).includes('NEXT_REDIRECT')) {
-           // This is a redirect, which is expected - don't show error
-           return;
-         }
-         
-         // Only show error toast for actual errors
-         console.error('Unexpected error:', error);
+         console.error('Error submitting form:', error);
          toast.error('An unexpected error occurred');
        }
     }

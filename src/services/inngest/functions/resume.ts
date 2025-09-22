@@ -61,19 +61,43 @@ export const createAiSummaryOfUploadedResume = inngest.createFunction(
   { event: "app/resume.uploaded" },
   async ({ step, event }) => {
     const { id: userId } = event.user;
+    console.log('=== AI SUMMARY: Starting process for user:', userId);
 
     const userResume = await step.run("get-user-resume", async () => {
-      return await db.query.UserResumeTable.findFirst({
+      console.log('AI SUMMARY: Fetching user resume from database...');
+      const resume = await db.query.UserResumeTable.findFirst({
         where: eq(UserResumeTable.userId, userId),
         columns: { resumeFileUrl: true },
       });
+      console.log('AI SUMMARY: Resume found:', !!resume, 'URL:', resume?.resumeFileUrl);
+      return resume;
     });
-    if (!userResume?.resumeFileUrl) return;
+    
+    if (!userResume?.resumeFileUrl) {
+      console.log('AI SUMMARY: No resume found or no URL, skipping AI processing');
+      return;
+    }
 
-    // Upload the PDF so Gemini can read it
+    if (!env.GEMINI_API_KEY) {
+      console.error('AI SUMMARY: GEMINI_API_KEY not configured');
+      throw new Error('GEMINI_API_KEY not configured');
+    }
+
+    console.log('AI SUMMARY: GEMINI_API_KEY is configured');
+
     const { fileUri } = await step.run(
       "upload-to-gemini",
-      () => uploadPdfToGeminiFromUrl(userResume.resumeFileUrl!, env.GEMINI_API_KEY)
+      async () => {
+        console.log('AI SUMMARY: Uploading resume to Gemini from URL:', userResume.resumeFileUrl);
+        try {
+          const result = await uploadPdfToGeminiFromUrl(userResume.resumeFileUrl!, env.GEMINI_API_KEY);
+          console.log('AI SUMMARY: Upload to Gemini successful, fileUri:', result.fileUri);
+          return result;
+        } catch (error) {
+          console.error('AI SUMMARY: Failed to upload to Gemini:', error);
+          throw error;
+        }
+      }
     );
 
     // Call Gemini 2.5 Pro
@@ -102,29 +126,38 @@ export const createAiSummaryOfUploadedResume = inngest.createFunction(
       },
     });
 
+    console.log('AI SUMMARY: Gemini inference completed');
+
     await step.run("save-ai-summary", async () => {
       try {
         const textPart = result?.candidates?.[0]?.content?.parts?.find((p: unknown) => p && typeof p === 'object' && 'text' in p);
         const text = textPart && 'text' in textPart ? textPart.text : null;
         
+        console.log('AI SUMMARY: Extracted text:', text ? `Length: ${text.length}` : 'null');
+        
         if (typeof text !== "string" || !text.trim()) {
-          console.log('No valid AI summary text found for user:', userId);
+          console.log('AI SUMMARY: No valid AI summary text found for user:', userId);
           return;
         }
         
         if (text.trim() === 'N/A') {
-          console.log('Gemini determined this is not a resume for user:', userId);
+          console.log('AI SUMMARY: Gemini determined this is not a resume for user:', userId);
           return;
         }
         
-        console.log('Saving AI summary for user:', userId, '- Length:', text.length);
+        console.log('AI SUMMARY: Saving AI summary for user:', userId, '- Length:', text.length);
         await updateUserResume(userId, { aiSummary: text });
-        console.log('AI summary saved successfully for user:', userId);
+        console.log('AI SUMMARY: AI summary saved successfully for user:', userId);
+        
+        // Optional: Send a completion event that could trigger browser notifications
+        // This could be used for real-time updates via websockets or SSE in the future
         
       } catch (error) {
-        console.error('Failed to save AI summary for user:', userId, error);
+        console.error('AI SUMMARY: Failed to save AI summary for user:', userId, error);
         throw error;
       }
     });
+    
+    console.log('=== AI SUMMARY: Process completed for user:', userId);
   }
 );

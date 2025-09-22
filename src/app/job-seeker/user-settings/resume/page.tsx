@@ -15,17 +15,19 @@ import {
   import { db } from "@/app/drizzle/db"
   import { UserResumeTable } from "@/app/drizzle/schema"
   import { eq } from "drizzle-orm"
-  import { MarkdownRenderer } from "@/components/markdown/MarkdownRenderer"
   import { Skeleton } from "@/components/ui/skeleton"
   import { FileText, Upload } from "lucide-react"
-import { Separator } from "@radix-ui/react-separator"
+  import { AISummaryStatus } from "@/components/resume/AISummaryStatus"
   
   export default async function UserResumePage() {
     const { userId, user } = await getCurrentUser({ allData: true })
+    console.log('User ID FROM RESUME PAGE:', userId)
+    console.log('User FROM RESUME PAGE:', user)
     if (userId == null) return notFound()
     
-    // Use the actual database user ID, matching the logic in UploadThing router
+    // Use the actual database user ID if available, fallback to session ID
     const actualUserId = user?.id || userId
+    console.log('Actual User ID for resume lookup:', actualUserId)
   
     const userResume = await getUserResume(actualUserId)
     const hasResume = userResume != null
@@ -80,7 +82,11 @@ import { Separator } from "@radix-ui/react-separator"
             </Card>
 
             <Suspense fallback={<AISummarySkeleton />}>
-              <AISummaryCard userId={actualUserId} />
+              <AISummaryStatus 
+                userId={actualUserId} 
+                initialSummary={userResume.aiSummary} 
+                resumeUpdatedAt={userResume.updatedAt} 
+              />
             </Suspense>
           </>
         ) : (
@@ -102,7 +108,11 @@ import { Separator } from "@radix-ui/react-separator"
               </CardContent>
             </Card>
 
-            <AISummaryPlaceholder />
+            <AISummaryStatus 
+              userId={actualUserId} 
+              initialSummary={null} 
+              resumeUpdatedAt={null} 
+            />
           </>
         )}
       </div>
@@ -137,59 +147,6 @@ import { Separator } from "@radix-ui/react-separator"
           <Skeleton className="h-10 w-32 mx-auto" />
         </div>
       </div>
-    )
-  }
-  
-  function AISummaryPlaceholder() {
-    return (
-      <Card className="border-dashed border-2 ">
-        <CardHeader className="text-center">
-
-          <CardTitle className=" text-lg flex items-center gap-2 justify-center "> <FileText className="w-4 h-4 tx" /> AI Summary</CardTitle>
-          <CardDescription className="text-sm text-muted-foreground space-y-2 space-grotesk">
-            Once you upload your resume, our AI will analyze it and create a professional summary for employers to quickly understand your qualifications and experience.
-          </CardDescription>
-        </CardHeader>
-      </Card>
-    )
-  }
-  
-  async function AISummaryCard({ userId }: { userId: string }) {
-    const userResume = await getUserResume(userId)
-    
-  if (userResume == null) return <AISummaryPlaceholder />
-  
-    if (userResume.aiSummary == null) {
-      return (
-        <Card className="b">
-          <CardHeader className="text-center">
-            <div className="inline-flex items-center justify-center w-10 h-10  rounded-full mb-2">
-              <FileText className="w-4 h-4 " />
-            </div>
-            <CardTitle className=" text-lg">AI Summary Processing</CardTitle>
-            <CardDescription className=" text-sm">
-              Your resume has been uploaded successfully! Our AI is currently analyzing it to create a professional summary. This usually takes a few moments.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      )
-    }
-  
-    return (
-      <Card className="">
-        <CardHeader className="">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <FileText className="w-4 h-4" />
-            AI Summary
-          </CardTitle>
-          <CardDescription className="text-sm text-muted-foreground space-grotesk">
-            This summary is generated after your upload. {userResume.updatedAt ? `Last updated ${new Date(userResume.updatedAt).toLocaleString()}.` : ''}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="pt-6">
-          <MarkdownRenderer source={userResume.aiSummary} />
-        </CardContent>
-      </Card>
     )
   }
   

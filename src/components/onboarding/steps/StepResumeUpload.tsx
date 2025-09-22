@@ -43,22 +43,34 @@ export function StepResumeUpload({
     onNext()
   }
 
-  const handleUploadComplete = (res: { url: string; name: string }[]) => {
+  const handleUploadComplete = (res: { url: string; name: string; key?: string; size?: number }[]) => {
+    console.log('=== CV UPLOAD ONBOARDING: Upload completed ===');
+    console.log('CV UPLOAD ONBOARDING: Response:', res);
+    
     if (res && res.length > 0) {
       const uploadedFile = res[0]
+      console.log('CV UPLOAD ONBOARDING: File details - name:', uploadedFile.name, 'url:', uploadedFile.url, 'key:', uploadedFile.key, 'size:', uploadedFile.size);
+      
       setFormData({
         hasResume: true,
         resumeUrl: uploadedFile.url
       })
 
+      console.log('CV UPLOAD ONBOARDING: Form data updated successfully');
       toast({
         title: "Resume Uploaded",
         description: "Your resume has been uploaded successfully!",
       })
+    } else {
+      console.warn('CV UPLOAD ONBOARDING: No files in response');
     }
   }
 
   const handleUploadError = (error: Error) => {
+    console.error('=== CV UPLOAD ONBOARDING: Upload error ===');
+    console.error('CV UPLOAD ONBOARDING: Error message:', error.message);
+    console.error('CV UPLOAD ONBOARDING: Error details:', error);
+    
     toast({
       title: "Upload Failed",
       description: error.message || "There was an error uploading your resume. Please try again.",
@@ -67,6 +79,7 @@ export function StepResumeUpload({
   }
 
   const removeFile = () => {
+    console.log('CV UPLOAD ONBOARDING: Removing uploaded file');
     setFormData({ hasResume: false, resumeUrl: "" })
   }
 
@@ -97,14 +110,14 @@ export function StepResumeUpload({
                 onClientUploadComplete={handleUploadComplete}
                 onUploadError={handleUploadError}
                 onUploadBegin={(name) => {
-                  console.log('Upload began for file:', name);
+                  console.log('CV UPLOAD ONBOARDING: Upload began for file:', name);
                 }}
                 onUploadProgress={(progress) => {
-                  console.log('Upload progress:', progress);
+                  console.log('CV UPLOAD ONBOARDING: Upload progress:', progress + '%');
                 }}
               />
               <p className="text-center text-xs text-muted-foreground">
-                PDF only · Max size 4MB · 1 file
+                PDF only · Max size 8MB · 1 file
               </p>
             </div>
           ) : (

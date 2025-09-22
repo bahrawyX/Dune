@@ -11,21 +11,31 @@ const DropzoneClient = () => {
       <UploadDropzone
           endpoint="resumeUploader"
           onClientUploadComplete={(res) => {
-            console.log('Client upload complete:', res);
+            console.log('=== CV UPLOAD CLIENT: Upload completed successfully ===');
+            console.log('CV UPLOAD CLIENT: Response data:', res);
+            res?.forEach((file, index) => {
+              console.log(`CV UPLOAD CLIENT: File ${index + 1} - name: ${file.name}, url: ${file.url}, key: ${file.key}, size: ${file.size}`);
+            });
             
-            // Refresh the page to show the new resume
+            toast.success('Resume uploaded successfully! AI analysis starting...', { id: 'upload-toast' });
+            
+            // Refresh the page to show the new resume and start AI processing
+            console.log('CV UPLOAD CLIENT: Refreshing page to show new resume and start AI processing');
             router.refresh();
           }}
           onUploadError={(error) => {
-            console.error('Upload error:', error);
-            toast.error(`Upload failed: ${error.message}`);
+            console.error('=== CV UPLOAD CLIENT: Upload error occurred ===');
+            console.error('CV UPLOAD CLIENT: Error message:', error.message);
+            console.error('CV UPLOAD CLIENT: Error details:', error);
+            toast.error(`Upload failed: ${error.message}`, { id: 'upload-toast' });
           }}
           onUploadBegin={(name) => {
-            console.log('Upload began for file:', name);
+            console.log('=== CV UPLOAD CLIENT: Upload started ===');
+            console.log('CV UPLOAD CLIENT: File name:', name);
             toast.loading('Uploading resume...', { id: 'upload-toast' });
           }}
           onUploadProgress={(progress) => {
-            console.log('Upload progress:', progress);
+            console.log('CV UPLOAD CLIENT: Upload progress:', progress + '%');
             toast.loading(`Uploading... ${progress}%`, { id: 'upload-toast' });
           }}
       />

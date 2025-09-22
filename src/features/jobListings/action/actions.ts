@@ -111,8 +111,16 @@ export async function createJobListing(unSafeData:z.infer<typeof JobListingSchem
         }
     }
     
-    // Redirect after successful creation (outside try-catch to avoid catching redirect error)
-    redirect(`/employer/job-listings/${jobListing.id}`)
+    // Add success message before redirect
+    // Note: We need to use revalidatePath and redirect pattern for proper toast handling
+    const { revalidatePath } = await import('next/cache');
+    revalidatePath('/employer/job-listings');
+    
+    return {
+        error: false,
+        message: "Job listing created successfully!",
+        jobListingId: jobListing.id
+    }
 }
 export async function updateJobListing(id:string, unSafeData:z.infer<typeof JobListingSchema>){
     const {orgId} = await getCurrentOrganization();

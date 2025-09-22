@@ -17,7 +17,7 @@ type Events = {
         "clerk/organization.deleted" : ClerkWebHookData<DeletedObjectJSON>  
         "clerk/webhook_recieved " : { data: { raw: string, headers: Record<string, string> } }
         "app/jobListingApplication.created" : { data: { jobListingId: string, userId: string } }
-        "app/resume.uploaded" : { user: { id: string }, data: { userId: string } }
+        "app/resume.uploaded" : { user: { id: string }, data: { userId: string, resumeUrl: string, fileKey: string } }
         "clerk/organizationMembership.created" : ClerkWebHookData<OrganizationMembershipJSON>
         "clerk/organizationMembership.deleted" : ClerkWebHookData<OrganizationMembershipJSON>
         "app/email.daily-user-job-listings" : {
