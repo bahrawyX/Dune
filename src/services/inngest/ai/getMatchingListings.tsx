@@ -8,8 +8,6 @@ import {
 import { createAgent, gemini } from "@inngest/agent-kit"
 import { z } from "zod"
 import { getLastOutputMessage } from "./getLastOutputMessage"
-// import { getLastOutputMessage } from "@/services/inngest/ai/getLastOutputMessage"
-
 const listingSchema = z.object({
   id: z.string(),
   title: z.string(),
