@@ -32,14 +32,25 @@ export function NewJobListingApplicationForm({
   async function onSubmit(
     data: z.infer<typeof newjobListingApplicationSchema>
   ) {
-    const results = await createJobListingApplication(jobListingId, data)
+    try {
+      const results = await createJobListingApplication(jobListingId, data)
 
-    if (results.error) {
-      toast.error(results.message)
-      return
+      if (results.error) {
+        toast.error(results.message)
+        return
+      }
+
+      toast.success(results.message)
+      
+      // Close the dialog by triggering a window event or use router
+      // Give a small delay to show the success message
+      setTimeout(() => {
+        window.location.reload()
+      }, 1000)
+    } catch (error) {
+      console.error('Application submission error:', error)
+      toast.error('Failed to submit application. Please try again.')
     }
-
-    toast.success(results.message)
   }
 
   return (

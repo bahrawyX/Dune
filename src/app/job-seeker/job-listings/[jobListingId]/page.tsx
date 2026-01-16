@@ -111,17 +111,10 @@ async function JobListingDetails({
                 {jobListing.postedAt.toLocaleDateString()}
               </div>
             )}
-            <Button size="icon" variant="outline" asChild>
-              <Link
-                href={`/?${convertSearchparamToString(await searchParams)}`}
-              >
-                <span className="sr-only">Close</span>
-                <XIcon />
-              </Link>
-            </Button>
+
           </div>
         </div>
-        <div className="flex flex-wrap gap-0 mt-2">
+        <div className="flex flex-wrap gap-0 my-2">
           <JobListingBadges jobListing={jobListing} />
         </div>
         <Suspense fallback={<Button disabled>Apply</Button>}>

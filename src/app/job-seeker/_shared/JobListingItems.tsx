@@ -17,6 +17,7 @@ import z from 'zod'
 import { BookmarkButton } from '@/features/jobBookmarks/components/BookmarkButton'
 import { getCurrentUser } from '@/services/clerk/lib/getCurrentAuth'
 import { isJobBookmarked, getBulkBookmarkStatus } from '@/features/jobBookmarks/actions/actions'
+import { JobListingLink } from './JobListingLink'
 const searchParamsSchema = z.object({
     title: z.string().optional().catch(undefined),
     city: z.string().optional().catch(undefined),
@@ -92,13 +93,13 @@ async function SuspendedComponent({searchParams , params}:Props){
       <div className='space-y-4'>
         <ResultsHeader search={search} validated={validatedSearchParams} count={resultsCount} />
         {jobListings.map((jobListing) => (
-          <Link className='block' href={`/job-seeker/job-listings/${jobListing.id}?${convertSearchparamToString(search)}`} key={jobListing.id}>
+          <JobListingLink className='block' href={`/job-seeker/job-listings/${jobListing.id}?${convertSearchparamToString(search)}`} key={jobListing.id}>
             <JobListingListItem 
               organization={jobListing.organization} 
               jobListing={jobListing}
               initialBookmarked={bookmarkStatuses[jobListing.id]}
             />
-          </Link>
+          </JobListingLink>
         ))}
       </div>
     )

@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button'
 export default function BookmarksSidebar() {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Quick Actions</SidebarGroupLabel>
-      <SidebarGroupContent className="space-y-2">
+      <SidebarGroupLabel><span className="group-data-[state=collapsed]:hidden">Quick Actions</span></SidebarGroupLabel>
+      <SidebarGroupContent className="group-data-[state=collapsed]:hidden space-y-2">
         <Button asChild variant="outline" size="sm" className="w-full justify-start">
           <Link href="/job-seeker" className="flex items-center gap-2">
             <ClipboardPenIcon className="w-4 h-4" />

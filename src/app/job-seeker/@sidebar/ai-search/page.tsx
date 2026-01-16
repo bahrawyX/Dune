@@ -14,9 +14,9 @@ export default function AiSearchSidebar() {
   return (
     <SidebarGroup>
       <SidebarGroupLabel className='flex items-center gap-2'>
-        <Bot className='w-4 h-4'/> AI Search
+        <Bot className='w-4 h-4'/> <span className="group-data-[state=collapsed]:hidden">AI Search</span>
       </SidebarGroupLabel>
-      <SidebarGroupContent className='space-y-4'>
+      <SidebarGroupContent className='group-data-[state=collapsed]:hidden space-y-4'>
         <div className='rounded-md border p-2 text-xs flex items-start gap-2'>
           <p>Describe your skills, preferred stack, seniority, location, and company size to get better matches.</p>
       </div>

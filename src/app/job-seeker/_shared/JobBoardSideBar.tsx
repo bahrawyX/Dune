@@ -6,7 +6,7 @@ import React, { Suspense } from 'react'
 const JobBoardSideBar = () => {
   return (
     <SidebarGroup>
-        <SidebarGroupContent>
+        <SidebarGroupContent className="group-data-[state=collapsed]:hidden">
             <Suspense fallback={<JobBoardSideBarSkeleton />}>
                 <JobListingFilterForm />
             </Suspense>

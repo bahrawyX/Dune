@@ -224,31 +224,7 @@ export function OnboardingStepper() {
         </CardContent>
       </Card>
 
-      {/* Navigation */}
-      <div className="flex items-center justify-between">
-        <Button
-          variant="outline"
-          onClick={handlePrevious}
-          disabled={currentStep === 1}
-          className="flex items-center gap-2"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          Previous
-        </Button>
-
-        <div className="text-sm text-muted-foreground">
-          Step {currentStep} of {steps.length}
-        </div>
-
-        <Button
-          onClick={handleNext}
-          disabled={isPending}
-          className="flex items-center gap-2"
-        >
-          {currentStep === steps.length ? "Complete Setup" : "Next"}
-          <ChevronRight className="w-4 h-4" />
-        </Button>
-      </div>
+     
     </div>
-  )
+  ) 
 }

@@ -86,12 +86,24 @@ export async function createJobListingApplication(
       ...data,
     })
 
-    revalidatePath(`/job-listings/${jobListingId}`)
+    // Revalidate the path first
+    try {
+      revalidatePath(`/job-seeker/job-listings/${jobListingId}`)
+    } catch (revalidateError) {
+      console.error('Error revalidating path:', revalidateError)
+      // Don't fail the entire operation if revalidation fails
+    }
 
-    await inngest.send({
-      name: "app/jobListingApplication.created",
-      data: { jobListingId, userId: actualUserId },
-    })
+    // Send analytics event - don't fail if this errors
+    try {
+      await inngest.send({
+        name: "app/jobListingApplication.created",
+        data: { jobListingId, userId: actualUserId },
+      })
+    } catch (inngestError) {
+      console.error('Error sending Inngest event:', inngestError)
+      // Don't fail the entire operation if analytics fails
+    }
 
     return {
       error: false,

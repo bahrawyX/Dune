@@ -8,8 +8,8 @@ const UserResumePage = () => {
     <>
       <UserSettingsSidebar />
       <SidebarGroup>
-        <SidebarGroupLabel className='flex items-center gap-2'><FileText className='w-4 h-4'/> Upload notes</SidebarGroupLabel>
-        <SidebarGroupContent className='text-xs text-muted-foreground space-y-2'>
+        <SidebarGroupLabel className='flex items-center gap-2'><FileText className='w-4 h-4'/> <span className="group-data-[state=collapsed]:hidden">Upload notes</span></SidebarGroupLabel>
+        <SidebarGroupContent className='group-data-[state=collapsed]:hidden text-xs text-muted-foreground space-y-2'>
           <p>PDF only • Max 8MB • One file per upload.</p>
           <p>Uploading again replaces your current resume.</p>
         </SidebarGroupContent>

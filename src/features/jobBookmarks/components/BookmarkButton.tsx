@@ -24,7 +24,11 @@ export function BookmarkButton({
   const [isPending, startTransition] = useTransition()
   const { isSignedIn } = useUser()
 
-  const handleToggle = () => {
+  const handleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    // Prevent the click from propagating to parent elements (like links)
+    e.preventDefault()
+    e.stopPropagation()
+    
     if (!isSignedIn) {
       toast.error("Please sign in to bookmark jobs")
       return

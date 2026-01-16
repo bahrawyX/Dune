@@ -5,6 +5,8 @@ import SidebarUserButton from "@/features/users/components/SidebarUserButton";
 // Removed auth imports - no longer checking for onboarding
 import AppSideBar from "@/components/sidebar/AppSideBar";
 import SidebarNavMenuGroup from "@/components/sidebar/SidebarNavMenuGroup";
+import JobSeekerNavbar from "@/components/navigation/JobSeekerNavbar";
+import PageTransitionProvider from "@/components/providers/PageTransitionProvider";
 
 export default async function JobSeekerLayout({children ,sidebar}: {children: ReactNode, sidebar: ReactNode}) {
   // Removed onboarding check - users go directly to main app after sign-in
@@ -27,7 +29,10 @@ export default async function JobSeekerLayout({children ,sidebar}: {children: Re
             </>
     } 
       footerButton={<SidebarUserButton />}  >
-            {children}
+            <JobSeekerNavbar />
+            <PageTransitionProvider>
+              {children}
+            </PageTransitionProvider>
       </AppSideBar>
     </>
   );

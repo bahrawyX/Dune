@@ -8,8 +8,8 @@ const UserNotificationPage = () => {
     <>
       <UserSettingsSidebar />
       <SidebarGroup>
-        <SidebarGroupLabel className='flex items-center gap-2'><Bell className='w-4 h-4'/> Email tips</SidebarGroupLabel>
-        <SidebarGroupContent className='text-xs text-muted-foreground space-y-3'>
+        <SidebarGroupLabel className='flex items-center gap-2'><Bell className='w-4 h-4'/> <span className="group-data-[state=collapsed]:hidden">Email tips</span></SidebarGroupLabel>
+        <SidebarGroupContent className='group-data-[state=collapsed]:hidden text-xs text-muted-foreground space-y-3'>
           <div className='flex items-start gap-2'>
             <Sparkles className='w-3.5 h-3.5 mt-0.5'/>
             <p>Be specific in your prompt: skills, seniority, location, and salary preferences.</p>

@@ -75,7 +75,13 @@ export function StepAdditionalPreferences({
       // User will enter custom location
       return
     }
-    setFormData(prev => ({ ...prev, location: value }))
+    // Automatically enable/disable remote work toggle based on Remote selection
+    const isRemote = value === "Remote"
+    setFormData(prev => ({ 
+      ...prev, 
+      location: value,
+      remoteWork: isRemote 
+    }))
     setCustomLocation("")
   }
 
