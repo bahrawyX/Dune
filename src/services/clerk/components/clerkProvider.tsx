@@ -11,7 +11,12 @@ const ClerkProvider = ({ children }: Props) => {
     const isDarkMode = useIsDarkMode()
   return (
     <Suspense>
-        <OriginalClerkProvider appearance={isDarkMode ? {baseTheme: [dark]} : undefined}>
+        <OriginalClerkProvider 
+            appearance={isDarkMode ? {baseTheme: [dark]} : undefined}
+            afterSignOutUrl="/"
+            signInFallbackRedirectUrl="/getting-ready"
+            signUpFallbackRedirectUrl="/getting-ready"
+        >
             {children}
         </OriginalClerkProvider>
     </Suspense>

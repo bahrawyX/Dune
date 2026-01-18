@@ -7,9 +7,11 @@ import { HeroGeometric } from "@/components/ui/shape-landing-hero"
 import { auth } from "@clerk/nextjs/server"
 import { SignOutButton } from "@clerk/nextjs"
 import SiteFooter from "@/components/navigation/SiteFooter"
+import { env } from "process"
 
 export default async function HomePage() {
   const { userId } = await auth()
+  console.log('gemeni api key:', env.GEMINI_API_KEY)
   
   return (
     <div className="min-h-screen bg-[#030303]">

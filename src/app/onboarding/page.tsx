@@ -1,21 +1,16 @@
 'use client'
 
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
+import { OnboardingStepper } from "@/components/onboarding/OnboardingStepper"
 
-// Onboarding is disabled - redirect users directly to main app
 export default function OnboardingPage() {
-  const router = useRouter()
-  
-  useEffect(() => {
-    router.replace("/job-seeker")
-  }, [router])
-
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold mb-4">Welcome!</h1>
-        <p className="text-muted-foreground">Redirecting you to the job board...</p>
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 py-8 px-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold mb-2">Welcome to Dune Inc.</h1>
+          <p className="text-muted-foreground">Let's get you set up in just a few steps</p>
+        </div>
+        <OnboardingStepper />
       </div>
     </div>
   )

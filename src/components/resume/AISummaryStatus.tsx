@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { FileText, Loader2, CheckCircle, AlertCircle } from "lucide-react"
-import { MarkdownRenderer } from "@/components/markdown/MarkdownRenderer"
+import { ClientMarkdownRenderer } from "@/components/markdown/ClientMarkdownRenderer"
 
 interface AISummaryStatusProps {
   userId: string
@@ -155,7 +155,7 @@ export function AISummaryStatus({ userId, initialSummary, resumeUpdatedAt }: AIS
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-0">
-        <MarkdownRenderer source={summary} />
+        <ClientMarkdownRenderer source={summary} />
       </CardContent>
     </Card>
   )

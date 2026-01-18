@@ -16,31 +16,10 @@ export default async function GettingReadyPage() {
   const onboardingStatus = await checkOnboardingStatus()
   
   if (onboardingStatus.isCompleted) {
+    // Check user role and redirect accordingly
+    // For now, redirect to job-seeker by default
     redirect("/job-seeker")
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Let&apos;s Get You Ready! 🚀
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              We&apos;ll help you set up your profile in just a few steps so you can start finding your dream job.
-            </p>
-          </div>
-          
-          <Suspense fallback={
-            <div className="flex items-center justify-center min-h-[400px]">
-              <LoadingSpinner />
-            </div>
-          }>
-            <OnboardingStepper />
-          </Suspense>
-        </div>
-      </div>
-    </div>
-  )
-}
+  // If not completed, redirect to the main onboarding page
+  redirect("/onboarding")

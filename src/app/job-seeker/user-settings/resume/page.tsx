@@ -107,12 +107,6 @@ import {
                 </Suspense>
               </CardContent>
             </Card>
-
-            <AISummaryStatus 
-              userId={actualUserId} 
-              initialSummary={null} 
-              resumeUpdatedAt={null} 
-            />
           </>
         )}
       </div>

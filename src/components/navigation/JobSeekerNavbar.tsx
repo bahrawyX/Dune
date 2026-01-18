@@ -3,7 +3,7 @@
 import React, { useState, useTransition } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Brain, Bookmark, BarChart3, Briefcase, Menu, Loader2 } from 'lucide-react'
+import { Brain, Bookmark, BarChart3, Briefcase, Menu, Loader2, Bell, FileUser } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSidebar } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
@@ -20,6 +20,8 @@ export default function JobSeekerNavbar() {
     { href: '/job-seeker/ai-search', label: 'AI Search', icon: Brain },
     { href: '/job-seeker/bookmarks', label: 'Bookmarks', icon: Bookmark },
     { href: '/job-seeker/analytics', label: 'Analytics', icon: BarChart3 },
+    { href: '/job-seeker/user-settings/resume', label: 'Resume', icon: FileUser },
+    { href: '/job-seeker/user-settings/notifications', label: 'Notifications', icon: Bell },
   ]
 
   const handleNavigation = (href: string, e: React.MouseEvent) => {

@@ -1,6 +1,7 @@
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";     
 import { ReactNode } from "react";
 import { AppSidebarClient } from "./_AppSidebarClient";
+import Link from "next/link";
 // Removed auth imports - no longer checking for onboarding
 
 export default async function AppSideBar({content, footerButton, children}: {content: ReactNode, footerButton: ReactNode, children: ReactNode}    ) {
@@ -12,7 +13,9 @@ export default async function AppSideBar({content, footerButton, children}: {con
             <Sidebar collapsible="icon" className="overflow-hidden">
               <SidebarHeader className="flex-row items-center">
                 <SidebarTrigger />
-                <span className="text-lg  text-nowrap noize">Dune Inc.</span>
+                <Link href="/" className="text-lg text-nowrap noize hover:opacity-80 transition-opacity">
+                  Dune Inc.
+                </Link>
               </SidebarHeader>
               <SidebarContent>
                     {
